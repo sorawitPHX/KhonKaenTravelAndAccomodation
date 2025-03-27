@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +5,102 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  user
+  admin
+}
+
+enum TourismCategory {
+  natural
+  historical
+  cultural
+  shopping
+  entertainment
+  religious
+  other
+}
+
+enum AccommodationCategory {
+  hotel
+  resort
+  hostel
+  apartment
+  camping
+  other
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  password   String
+  role       UserRole @default(user)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  reviews    Review[]
+  reviewLikes ReviewLike[]
+}
+
+model TourismSpot {
+  id           Int               @id @default(autoincrement()) 
+  name         String
+  address      String?
+  phoneNumber  String?           @db.VarChar(10)
+  website      String?
+  category     TourismCategory
+  price        Int?
+  openingHours String?
+  photos       String[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  reviews      Review[]
+
+  @@map("TourismSpot")
+}
+
+model AccommodationSpot {
+  id           Int                   @id @default(autoincrement()) 
+  name         String
+  address      String?
+  phoneNumber  String?               @db.VarChar(10)
+  website      String?
+  category     AccommodationCategory
+  price        Int?
+  openingHours String?
+  photos       String[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  reviews      Review[]
+
+  @@map("AccommodationSpot")
+}
+
+model Review {
+  id                   Int                @id @default(autoincrement()) 
+  userId               Int
+  tourismSpotId        Int?
+  accommodationSpotId  Int?
+  comment             String?
+  rating              Int
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  user                User               @relation(fields: [userId], references: [id])
+  tourismSpot         TourismSpot?       @relation(fields: [tourismSpotId], references: [id])
+  accommodationSpot   AccommodationSpot? @relation(fields: [accommodationSpotId], references: [id])
+  reviewLikes        ReviewLike[]
+}
+
+model ReviewLike {
+  id       Int   @id @default(autoincrement()) 
+  userId   Int
+  reviewId Int
+
+  user     User   @relation(fields: [userId], references: [id])
+  review   Review @relation(fields: [reviewId], references: [id])
 }
