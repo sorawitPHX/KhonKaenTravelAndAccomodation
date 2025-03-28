@@ -9,6 +9,61 @@
     <div id="map" style="height: 90vh;"></div>
   </main>
   <%- include('components/footer') %>
+
+  <div class="modal fade" id="placeModal" tabindex="-1" aria-labelledby="placeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="placeModalLabel">เพิ่มสถานที่ใหม่</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="placeForm">
+            <input type="hidden" id="placeId">
+            <div class="mb-3">
+              <label for="placeType" class="form-label">ประเภท</label>
+              <select class="form-select" id="placeType" name="type" required>
+                <option value="tourism">สถานที่ท่องเที่ยว</option>
+                <option value="accommodation">ที่พัก</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="placeName" class="form-label">ชื่อสถานที่</label>
+              <input type="text" class="form-control" id="placeName" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="placeAddress" class="form-label">ที่อยู่</label>
+              <input type="text" class="form-control" id="placeAddress" name="address">
+            </div>
+            <div id="extraFields">
+              <!-- ที่พัก: เบอร์โทร / เว็บไซต์ / ราคา -->
+            </div>
+            <div class="mb-3">
+              <label for="placeOpeningHours" class="form-label">เวลาเปิดทำการ</label>
+              <input type="text" class="form-control" id="placeOpeningHours" name="openingHours">
+            </div>
+            <div class="mb-3">
+              <label for="placePhotos" class="form-label">รูปภาพ (URL)</label>
+              <input type="text" class="form-control" id="placePhotos" name="photos">
+            </div>
+            <div class="mb-3">
+              <label for="placeLat" class="form-label">ละติจูด</label>
+              <input type="text" class="form-control" id="placeLat" name="lat" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="placeLng" class="form-label">ลองจิจูด</label>
+              <input type="text" class="form-control" id="placeLng" name="long" readonly>
+            </div>
+            <button type="submit" class="btn btn-primary">บันทึก</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
   <%- include('components/script-tag') %>
   <script src="/js/leafletHandle.js"></script>
 </body>
