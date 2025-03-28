@@ -94,9 +94,113 @@ async function deletePlace(type, id) {
     }
 }
 
+async function openReviewModal(type, placeId) {
+    document.getElementById("reviewPlaceId").value = placeId;
+    document.getElementById("reviewType").value = type;
+
+    let res = await fetch(`/api/reviews/${type}/${placeId}`);
+    let reviews = await res.json();
+
+    // ดึง userId ของผู้ใช้ที่ล็อกอินอยู่
+    let userRes = await fetch("/api/auth/current-user");
+    let userData = await userRes.json();
+    let currentUserId = userData?.id;
+
+    let reviewHtml = reviews.map(review => {
+        let userLiked = review.reviewLikes.some(like => like.userId === currentUserId);
+        let btnClass = userLiked ? "btn-primary" : "btn-light"; // เปลี่ยนสีปุ่มเมื่อไลก์แล้ว
+
+        // เพิ่มปุ่มลบรีวิวเมื่อรีวิวเป็นของผู้ใช้ที่ล็อกอิน
+        let deleteButton = review.userId === currentUserId ? `
+            <button class="btn btn-danger btn-sm" onclick="deleteReview(${review.id})">
+                ลบรีวิว
+            </button>
+        ` : '';
+
+        return `
+            <div class="card p-2 mb-2">
+                <strong>${review.user.name}</strong> คะแนนรีวิว ⭐${review.rating}
+                <p>${review.comment}</p>
+                <div class='text-end'>
+                    <button class="btn ${btnClass} btn-sm" onclick="likeReview(${review.id}, this)">
+                        👍 ${review.reviewLikes.length}
+                    </button>
+                    ${deleteButton}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    document.getElementById("reviewsList").innerHTML = reviewHtml || "<p>ยังไม่มีรีวิว</p>";
+    new bootstrap.Modal(document.getElementById("reviewModal")).show();
+}
+
+async function deleteReview(reviewId) {
+    if (confirm("คุณต้องการลบรีวิวนี้ใช่หรือไม่?")) {
+        let res = await fetch(`/api/reviews/${reviewId}`, { method: "DELETE" });
+
+        if (res.ok) {
+            alert("ลบรีวิวเรียบร้อยแล้ว");
+            let modal = bootstrap.Modal.getInstance(document.getElementById("reviewModal"));
+            if (modal) modal.hide(); // ปิด modal เดิมก่อน
+            setTimeout(() => openReviewModal(document.getElementById("reviewType").value, document.getElementById("reviewPlaceId").value), 300); // รอ modal ปิดก่อนแล้วเปิดใหม่
+        } else {
+            alert("เกิดข้อผิดพลาดในการลบรีวิว");
+        }
+    }
+}
+
+
+async function submitReview() {
+    let placeId = document.getElementById("reviewPlaceId").value;
+    let type = document.getElementById("reviewType").value;
+    let rating = document.getElementById("reviewRating").value;
+    let comment = document.getElementById("reviewComment").value;
+
+    let res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, placeId, rating, comment })
+    });
+
+    if (res.ok) {
+        alert("รีวิวของคุณถูกบันทึกแล้ว");
+        let modal = bootstrap.Modal.getInstance(document.getElementById("reviewModal"));
+        if (modal) modal.hide(); // ปิด modal เดิมก่อน
+        setTimeout(() => openReviewModal(type, placeId), 300); // รอ modal ปิดก่อนแล้วเปิดใหม่
+    } else {
+        alert("เกิดข้อผิดพลาดในการบันทึกรีวิว");
+    }
+}
+
+async function likeReview(reviewId) {
+    let res = await fetch(`/api/reviews/${reviewId}/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviewId })
+    });
+
+    if (res.ok) {
+        let modal = bootstrap.Modal.getInstance(document.getElementById("reviewModal"));
+        if (modal) modal.hide();
+        setTimeout(() => openReviewModal(document.getElementById("reviewType").value, document.getElementById("reviewPlaceId").value), 300);
+    } else {
+        alert("เกิดข้อผิดพลาด");
+    }
+}
+
+async function getCurrentUser() {
+    const res = await fetch('/api/auth/current-user')
+    const user = await res.json()
+    if (res.ok && user) {
+        return user
+    }
+}
+
 $(document).ready(async () => {
     Notiflix.Loading.hourglass();
-
+    const user = await getCurrentUser()
+    // console.log(user)
     let map = L.map('map').setView([16.40218, 102.81079], 12);
 
     let osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -131,22 +235,24 @@ $(document).ready(async () => {
     let layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
 
     // ✅ เปิด Modal เมื่อคลิกที่แผนที่
-    map.on('click', function (e) {
-        let { lat, lng } = e.latlng;
+    if (user?.role == 'admin') {
+        map.on('click', function (e) {
+            let { lat, lng } = e.latlng;
 
-        $('#placeId').val('');
-        $('#placeName').val('');
-        $('#placeAddress').val('');
-        $('#placeOpeningHours').val('');
-        $('#placePhotos').val('');
-        $('#placeType').val('tourism');
-        $('#placeLat').val(lat);
-        $('#placeLng').val(lng);
+            $('#placeId').val('');
+            $('#placeName').val('');
+            $('#placeAddress').val('');
+            $('#placeOpeningHours').val('');
+            $('#placePhotos').val('');
+            $('#placeType').val('tourism');
+            $('#placeLat').val(lat);
+            $('#placeLng').val(lng);
 
-        updateExtraFields('tourism'); // โหลด fields ให้ถูกต้อง
-        $('#placeModalLabel').text('เพิ่มสถานที่ใหม่');
-        $('#placeModal').modal('show');
-    });
+            updateExtraFields('tourism'); // โหลด fields ให้ถูกต้อง
+            $('#placeModalLabel').text('เพิ่มสถานที่ใหม่');
+            $('#placeModal').modal('show');
+        });
+    }
 
     // ✅ เปลี่ยน fields ตามประเภท
     $('#placeType').change(function () {
@@ -211,16 +317,21 @@ $(document).ready(async () => {
                     });
 
                     // ✅ เพิ่ม Marker เข้า Layer Group
+                    const modifyContainer = user?.role == 'admin' ?
+                        `<div class='col-12 d-flex justify-content-center gap-2'>
+                                        <button class="btn btn-warning btn-sm" onclick="editPlace('tourism', ${place.id})">แก้ไข</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deletePlace('tourism', ${place.id})">ลบ</button>
+                                    </div>
+                                    <hr class='my-2'>
+                                    ` : ''
                     L.marker([place.latitude, place.longitude], { icon: icon })
                         .bindPopup(`
                             <div class="container-fluid">
                                 <div class="row">
-                                    <div class='col-12 d-flex justify-content-center gap-2'>
-                                        <button class="btn btn-warning btn-sm" onclick="editPlace('tourism', ${place.id})">แก้ไข</button>
-                                        <button class="btn btn-danger btn-sm" onclick="deletePlace('tourism', ${place.id})">ลบ</button>
-                                    </div>
+                                    ${modifyContainer}
+                                    
                                     <div class="col-12">
-                                        <h5 class="popup-header">${place.name}</h5>
+                                        <h5 class="popup-header fw-bold">${place.name}</h5>
                                         <p><strong>หมวดหมู่:</strong> ${place.category}</p>
                                         <p><strong>เปิดให้บริการ:</strong> ${place.openingHours}</p>
                                         <p><strong>ที่อยู่:</strong> ${place.address ? place.address : 'ไม่ระบุ'}</p>
@@ -230,7 +341,10 @@ $(document).ready(async () => {
                                             <img src="${place.photos}" class="img-thumbnail" alt="Click to view larger image">
                                         </a>
                                     </div>
-                                    
+                                    <hr class='my-2'>
+                                    <div class="col text-center">
+                                        <button class="btn btn-info" onclick="openReviewModal('tourism', ${place.id})">อ่านรีวิว</button>
+                                    </div>
                                 </div>
                             </div>
                         `).addTo(tourismLayer); // ✅ เพิ่มเข้า Layer Group
@@ -258,24 +372,35 @@ $(document).ready(async () => {
                     });
 
                     // ✅ เพิ่ม Marker เข้า Layer Group
+                    const modifyContainer = user?.role == 'admin' ?
+                        `<div class='col-12 d-flex justify-content-center gap-2'>
+                                        <button class="btn btn-warning btn-sm" onclick="editPlace('accommodation', ${place.id})">แก้ไข</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deletePlace('accommodation', ${place.id})">ลบ</button>
+                                    </div>
+                                    <hr class='my-2'>
+                                    ` : ''
                     L.marker([place.latitude, place.longitude], { icon: icon })
                         .bindPopup(`
                             <div class="container-fluid">
                                 <div class="row">
-                                    <div class='col-12 d-flex justify-content-center gap-2'>
-                                        <button class="btn btn-warning btn-sm" onclick="editPlace('accommodation', ${place.id})">แก้ไข</button>
-                                        <button class="btn btn-danger btn-sm" onclick="deletePlace('accommodation', ${place.id})">ลบ</button>
-                                    </div>
+                                    ${modifyContainer}
                                     <div class="col-12">
-                                        <h5 class="popup-header">${place.name}</h5>
+                                        <h5 class="popup-header fw-bold">${place.name}</h5>
                                         <p><strong>หมวดหมู่:</strong> ${place.category}</p>
+                                        <p><strong>ราคา:</strong> ${place.price} บาท</p>
                                         <p><strong>เปิดให้บริการ:</strong> ${place.openingHours}</p>
+                                        <p><strong>เบอร์ติดต่อ:</strong> ${place.phoneNumber}</p>
+                                        <p><strong>เว็บไซต์:</strong> ${place.website ? place.website : 'ไม่พบ'}</p>
                                         <p><strong>ที่อยู่:</strong> ${place.address ? place.address : 'ไม่ระบุ'}</p>
                                     </div>
                                     <div class="col-12">
                                         <a href="${place.photos}" data-fancybox="gallery" data-caption="${'รูปภาพ ' + place.name}">
                                             <img src="${place.photos}" class="img-thumbnail" alt="Click to view larger image">
                                         </a>
+                                    </div>
+                                    <hr class='my-2'>
+                                    <div class="col text-center">
+                                        <button class="btn btn-info" onclick="openReviewModal('accommodation', ${place.id})">อ่านรีวิว</button>
                                     </div>
                                 </div>
                             </div>

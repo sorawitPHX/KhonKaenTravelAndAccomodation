@@ -12,6 +12,13 @@ const requireAuth = (req, res, next) => {
     next();
 };
 
+const requireAuthApi = (req, res, next) => {
+    if (!req.session.userId) {
+        return res.status(403).json({error: 'กรุณาเข้าสู่ระบบก่อน'});
+    }
+    next()
+};
+
 const setUserSession = (req, res, next) => {
     res.locals.user = req.session.userId ? { 
         id: req.session.userId, 
@@ -22,4 +29,4 @@ const setUserSession = (req, res, next) => {
     next();
 };
 
-module.exports = { redirectIfAuthenticated, requireAuth, setUserSession };
+module.exports = { redirectIfAuthenticated, requireAuth, setUserSession, requireAuthApi };

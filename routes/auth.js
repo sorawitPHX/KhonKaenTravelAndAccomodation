@@ -87,6 +87,11 @@ router.post("/signUp", upload.single('profile'), async (req, res) => {
 
         console.log("Uploaded file:", file);
 
+        // เก็บ userId ลง session
+        req.session.userId = user.id;
+        req.session.userName = user.name;
+        req.session.userProfile = user.profile_image || 'images/profile3.png';
+        req.session.userRole = user.role;
         res.json({ message: "สมัครสมาชิกสำเร็จ!", user });
         
     } catch (error) {
@@ -195,4 +200,14 @@ router.put("/profile", requireAuth, upload.single("profile"), async (req, res) =
         res.status(500).json({ error: "เกิดข้อผิดพลาดในการอัปเดตโปรไฟล์" });
     }
 });
+
+router.get("/current-user", (req, res) => {
+    if (req.session.userId) {
+        res.json({ id: req.session.userId, role: req.session.userRole });
+    } else {
+        res.json({ id: null });
+    }
+});
+
+
 module.exports = router;

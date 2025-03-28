@@ -90,7 +90,7 @@ model Review {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  user              User               @relation(fields: [userId], references: [id])
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   tourismSpot       TourismSpot?       @relation(fields: [tourismSpotId], references: [id])
   accommodationSpot AccommodationSpot? @relation(fields: [accommodationSpotId], references: [id])
   reviewLikes       ReviewLike[]
@@ -101,6 +101,6 @@ model ReviewLike {
   userId   Int
   reviewId Int
 
-  user   User   @relation(fields: [userId], references: [id])
-  review Review @relation(fields: [reviewId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 }

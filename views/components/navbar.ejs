@@ -31,11 +31,11 @@
         <% if(user) { %>
         <li class="nav-item dropdown d-inline-flex justify-content-center align-items-center">
           <a class="nav-link dropdown-toggle d-inline-flex justify-content-center align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class="">สวัสดีคุณ <%= user.name %></span>
+            <span class=""><%- user.role == 'admin' ? `<b>ผู้ดูแลระบบ</b> ${user.name}` : `<b>สวัสดีคุณ</b> ${user.name}` %></span>
             <img style="width: 32px; height: 32px;" class="rounded-circle object-fit-cover" src="<%= user.profile_image %>" alt="Profile">
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item">สวัสดีคุณ <%= user.name %></a></li>
+            <li><a class="dropdown-item"><%- user.role == 'admin' ? `<b>ผู้ดูแลระบบ</b> ${user.name}` : `<b>สวัสดีคุณ</b> ${user.name}` %></a></li>
             <li>
               <hr class="dropdown-divider">
             </li>
@@ -47,7 +47,7 @@
         <li class="nav-item d-inline-flex justify-content-center align-items-center">
           <form class="d-flex" role="search">
             <input class="form-control me-2" type="search" placeholder="ค้นหาสถานที่..." aria-label="Search">
-            <button class="btn btn-outline-light" type="submit">ค้นหา</button> <!-- ปรับให้เป็นปุ่มสีอ่อนเมื่อใช้ dark theme -->
+            <button class="btn btn-dark" type="submit">ค้นหา</button> <!-- ปรับให้เป็นปุ่มสีอ่อนเมื่อใช้ dark theme -->
           </form>
         </li>
       </ul>

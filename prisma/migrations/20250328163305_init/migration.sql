@@ -2,10 +2,10 @@
 CREATE TYPE "UserRole" AS ENUM ('user', 'admin');
 
 -- CreateEnum
-CREATE TYPE "TourismCategory" AS ENUM ('natural', 'historical', 'cultural', 'shopping', 'entertainment', 'religious', 'other');
+CREATE TYPE "TourismCategory" AS ENUM ('สวนสาธารณะ', 'พิพิธภัณฑ์', 'วัด', 'สวนน้ำ', 'สถานที่สักการะบูชา', 'คาเฟ่', 'สวนสัตว์', 'อนุสรณ์สถาน', 'อุทยานแห่งชาติ', 'อื่นๆ');
 
 -- CreateEnum
-CREATE TYPE "AccommodationCategory" AS ENUM ('hotel', 'resort', 'hostel', 'apartment', 'camping', 'other');
+CREATE TYPE "AccommodationCategory" AS ENUM ('โรงแรม', 'รีสอร์ท', 'โฮสเทล', 'อพาร์ทเมนท์', 'แคมป์ปิ้ง', 'อื่นๆ');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -13,6 +13,7 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "profile_image" TEXT,
     "role" "UserRole" NOT NULL DEFAULT 'user',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -24,14 +25,10 @@ CREATE TABLE "User" (
 CREATE TABLE "TourismSpot" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
-    "phoneNumber" VARCHAR(10),
-    "website" TEXT,
-    "category" "TourismCategory" NOT NULL,
-    "price" INTEGER,
-    "openingHours" JSONB,
-    "photos" TEXT[],
-    "geom" TEXT NOT NULL,
+    "address" TEXT,
+    "category" "TourismCategory" NOT NULL DEFAULT 'อื่นๆ',
+    "openingHours" TEXT,
+    "photos" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -42,14 +39,13 @@ CREATE TABLE "TourismSpot" (
 CREATE TABLE "AccommodationSpot" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
+    "address" TEXT,
     "phoneNumber" VARCHAR(10),
     "website" TEXT,
-    "category" "AccommodationCategory" NOT NULL,
+    "category" "AccommodationCategory" NOT NULL DEFAULT 'โรงแรม',
     "price" INTEGER,
-    "openingHours" JSONB,
-    "photos" TEXT[],
-    "geom" TEXT NOT NULL,
+    "openingHours" TEXT,
+    "photos" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -83,7 +79,7 @@ CREATE TABLE "ReviewLike" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
-ALTER TABLE "Review" ADD CONSTRAINT "Review_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Review" ADD CONSTRAINT "Review_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_tourismSpotId_fkey" FOREIGN KEY ("tourismSpotId") REFERENCES "TourismSpot"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -92,7 +88,7 @@ ALTER TABLE "Review" ADD CONSTRAINT "Review_tourismSpotId_fkey" FOREIGN KEY ("to
 ALTER TABLE "Review" ADD CONSTRAINT "Review_accommodationSpotId_fkey" FOREIGN KEY ("accommodationSpotId") REFERENCES "AccommodationSpot"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ReviewLike" ADD CONSTRAINT "ReviewLike_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ReviewLike" ADD CONSTRAINT "ReviewLike_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ReviewLike" ADD CONSTRAINT "ReviewLike_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ReviewLike" ADD CONSTRAINT "ReviewLike_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE CASCADE ON UPDATE CASCADE;

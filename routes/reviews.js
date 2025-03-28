@@ -1,99 +1,101 @@
 const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
+const { requireAuthApi } = require('../middlewares/authMiddleware')
 
 const prisma = new PrismaClient();
 
 // 📌 ดึงรีวิวทั้งหมด
-router.get("/", async (req, res) => {
+router.get("/:type/:id", async (req, res) => {
     try {
-        const reviews = await prisma.review.findMany({
-            include: {
-                user: true,
-                tourismSpot: true,
-                accommodationSpot: true,
-                reviewLikes: true,
-            },
-        });
+        const { type, id } = req.params;
+        let reviews;
+        if (type === "tourism") {
+            reviews = await prisma.review.findMany({
+                where: { tourismSpotId: parseInt(id) },
+                include: { user: true, reviewLikes: true }
+            });
+        } else if (type === "accommodation") {
+            reviews = await prisma.review.findMany({
+                where: { accommodationSpotId: parseInt(id) },
+                include: { user: true, reviewLikes: true }
+            });
+        } else {
+            return res.status(400).json({ error: "Invalid type" });
+        }
+
         res.json(reviews);
     } catch (error) {
         res.status(500).json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูลรีวิว" });
     }
 });
 
-// 📌 ดึงรีวิวของสถานที่ท่องเที่ยว
-router.get("/tourism/:tourismSpotId", async (req, res) => {
-    try {
-        const { tourismSpotId } = req.params;
-        const reviews = await prisma.review.findMany({
-            where: { tourismSpotId: parseInt(tourismSpotId) },
-            include: { user: true, reviewLikes: true },
-        });
-        res.json(reviews);
-    } catch (error) {
-        res.status(500).json({ error: "ไม่สามารถดึงรีวิวของสถานที่ท่องเที่ยวนี้ได้" });
-    }
-});
-
-// 📌 ดึงรีวิวของที่พัก
-router.get("/accommodation/:accommodationSpotId", async (req, res) => {
-    try {
-        const { accommodationSpotId } = req.params;
-        const reviews = await prisma.review.findMany({
-            where: { accommodationSpotId: parseInt(accommodationSpotId) },
-            include: { user: true, reviewLikes: true },
-        });
-        res.json(reviews);
-    } catch (error) {
-        res.status(500).json({ error: "ไม่สามารถดึงรีวิวของที่พักนี้ได้" });
-    }
-});
 
 // 📌 เพิ่มรีวิวใหม่
-router.post("/", async (req, res) => {
-    try {
-        const { userId, tourismSpotId, accommodationSpotId, comment, rating } = req.body;
-
-        if (!userId || !rating || (!tourismSpotId && !accommodationSpotId)) {
-            return res.status(400).json({ error: "ข้อมูลไม่ครบถ้วน" });
-        }
-
-        const review = await prisma.review.create({
-            data: { userId, tourismSpotId, accommodationSpotId, comment, rating },
-        });
-
-        res.status(201).json(review);
-    } catch (error) {
-        res.status(400).json({ error: "ไม่สามารถเพิ่มรีวิวได้" });
+router.post('/', requireAuthApi, async (req, res) => {
+    let { type, placeId, rating, comment } = req.body;
+    const userId = req.session.userId;
+    placeId = parseInt(placeId)
+    rating = parseInt(rating)
+    if (!userId) {
+        return res.status(401).json({ error: "กรุณาเข้าสู่ระบบ" });
     }
+
+    let newReview;
+    if (type === "tourism") {
+        newReview = await prisma.review.create({
+            data: { userId, tourismSpotId: parseInt(placeId), rating, comment }
+        });
+    } else if (type === "accommodation") {
+        newReview = await prisma.review.create({
+            data: { userId, accommodationSpotId: parseInt(placeId), rating, comment }
+        });
+    } else {
+        return res.status(400).json({ error: "ประเภทสถานที่ไม่ถูกต้อง" });
+    }
+
+    res.json(newReview);
 });
 
 // 📌 ลบรีวิว
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAuthApi, async (req, res) => {
     try {
         const { id } = req.params;
         await prisma.review.delete({ where: { id: parseInt(id) } });
         res.json({ message: "ลบรีวิวเรียบร้อยแล้ว" });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: "ไม่สามารถลบรีวิวได้" });
     }
 });
 
-// 📌 กดไลก์รีวิว
-router.post("/:reviewId/like", async (req, res) => {
+// 📌 กดไลก์ / ยกเลิกไลก์ รีวิว
+router.post("/:reviewId/like", requireAuthApi, async (req, res) => {
     try {
         const { reviewId } = req.params;
-        const { userId } = req.body;
+        const userId = req.session.userId;
 
         if (!userId) return res.status(400).json({ error: "ต้องระบุ userId" });
 
-        const like = await prisma.reviewLike.create({
-            data: { reviewId: parseInt(reviewId), userId },
+        const existingLike = await prisma.reviewLike.findFirst({
+            where: { reviewId: parseInt(reviewId), userId }
         });
 
-        res.status(201).json(like);
+        if (existingLike) {
+            // ถ้ามีไลก์อยู่แล้ว -> ลบออก (Unlike)
+            await prisma.reviewLike.delete({
+                where: { id: existingLike.id }
+            });
+            return res.status(200).json({ message: "ยกเลิกไลก์สำเร็จ" });
+        } else {
+            // ถ้ายังกดไลก์ -> เพิ่มไลก์
+            const like = await prisma.reviewLike.create({
+                data: { reviewId: parseInt(reviewId), userId }
+            });
+            return res.status(201).json(like);
+        }
     } catch (error) {
-        res.status(400).json({ error: "ไม่สามารถกดไลก์รีวิวได้" });
+        res.status(400).json({ error: "ไม่สามารถกดไลก์/ยกเลิกไลก์ได้" });
     }
 });
 

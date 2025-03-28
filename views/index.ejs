@@ -61,6 +61,34 @@
     </div>
   </div>
 
+  <div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">รีวิวสถานที่</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="reviewsList"></div>
+          <hr>
+          <h5>เพิ่มรีวิวของคุณ</h5>
+          <input type="hidden" id="reviewPlaceId">
+          <input type="hidden" id="reviewType">
+          <select id="reviewRating" class="form-select">
+            <option value="5">⭐⭐⭐⭐⭐</option>
+            <option value="4">⭐⭐⭐⭐</option>
+            <option value="3">⭐⭐⭐</option>
+            <option value="2">⭐⭐</option>
+            <option value="1">⭐</option>
+          </select>
+          <textarea id="reviewComment" class="form-control mt-2" placeholder="เขียนรีวิว..."></textarea>
+          <button class="btn btn-success mt-2" onclick="submitReview()">ส่งรีวิว</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 
 
 
