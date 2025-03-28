@@ -132,8 +132,8 @@ $(document).ready(async () => {
                     fillOpacity: 0.5  // ความโปร่งใสของพื้นที่
                 },
                 onEachFeature: function (feature, layer) {
-                    if (feature.properties && feature.properties.PROV_NAMT) {
-                        layer.bindPopup(`<b>เขต:</b> ${feature.properties.PROV_NAMT}`);
+                    if (feature.properties && feature.properties.AMP_NAMT) {
+                        layer.bindPopup(`<b>เขต:</b> ${feature.properties.AMP_NAMT}`);
                     }
                 }
             });
