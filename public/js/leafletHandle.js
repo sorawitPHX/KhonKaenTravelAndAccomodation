@@ -201,7 +201,7 @@ $(document).ready(async () => {
     Notiflix.Loading.hourglass();
     const user = await getCurrentUser()
     // console.log(user)
-    let map = L.map('map').setView([16.40218, 102.81079], 12);
+    let map = L.map('map').setView([16.468218482217885, 102.6308571861837], 9);
 
     let osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 20,
