@@ -80,9 +80,9 @@
   <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="login-container">
       <h2>เข้าสู่ระบบ</h2>
-      <form id="loginForm">
-        <input type="text" id="username" placeholder="ชื่อผู้ใช้ / อีเมล" required>
-        <input type="password" id="password" placeholder="รหัสผ่าน" required>
+      <form id="signInForm">
+        <input type="email" id="email" name="email" placeholder="อีเมล" required>
+        <input type="password" id="password" name="password" placeholder="รหัสผ่าน" required>
         <button type="submit">เข้าสู่ระบบ</button>
       </form>
       <p>ยังไม่มีบัญชี? <a href="/signUp">สมัครสมาชิก</a></p>
@@ -91,7 +91,40 @@
   </div>
 
   <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <%- include('components/script-tag') %>
+  <script>
+    $('#signInForm').on('submit', async (e) => {
+      e.preventDefault()
+      const form = e.target
+      const res = await fetch('/api/auth/signIn', {
+        method: 'post',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: form.email.value,
+          password: form.password.value
+        })
+      })
+      const data = await res.json()
+      if (res.ok) {
+        Notiflix.Report.success(
+          'เข้าสู่ระบบสำเร็จ',
+          `${data.message}`,
+          'ตกลง',
+          () => {
+            window.location.href = '/'
+          }
+        )
+      } else {
+        Notiflix.Report.failure(
+          'เข้าสู่ระบบไม่สำเร็จ',
+          `${data.error}`,
+          'ตกลง'
+        )
+      }
+    })
+  </script>
 
 </body>
 

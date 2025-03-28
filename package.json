@@ -16,6 +16,7 @@
   "dependencies": {
     "@fancyapps/ui": "^5.0.36",
     "@prisma/client": "^6.5.0",
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
@@ -24,8 +25,11 @@
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
+    "express-session": "^1.18.1",
     "jquery": "^3.7.1",
     "leaflet": "^1.9.4",
+    "multer": "^1.4.5-lts.2",
+    "notiflix": "^3.2.8",
     "pg": "^8.14.1",
     "prisma": "^6.5.0"
   },

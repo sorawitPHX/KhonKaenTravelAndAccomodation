@@ -70,20 +70,56 @@
   <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="signup-container">
       <h2>สมัครสมาชิก</h2>
-      <form id="signupForm">
-        <input type="email" id="email" placeholder="อีเมล" required>
-        <input type="text" id="name" placeholder="ชื่อ-นามสกุล" required>
-        <input type="password" id="password" placeholder="รหัสผ่าน" required>
-        <input type="date" id="dob" required>
+      <form id="signupForm" enctype="multipart/form-data">
+        <input type="email" name="email" id="email" placeholder="อีเมล" required>
+        <input type="text" id="name" name="name" placeholder="ชื่อ-นามสกุล" required>
+        <input type="password" id="password" name="password" placeholder="รหัสผ่าน" required>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="ยืนยันรหัสผ่าน" required>
+        <input type="file" id="profile" name="profile" placeholder="รูปภาพโปรไฟล์" accept="image/png,image/jpeg">
         <button type="submit">สมัครสมาชิก</button>
       </form>
-      <p>มีบัญชีแล้ว? <a href="login.html">เข้าสู่ระบบ</a></p>
+      <p>มีบัญชีแล้ว? <a href="/signIn">เข้าสู่ระบบ</a></p>
     </div>
   </div>
 
   <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+  <%- include('components/script-tag') %>
+  <script>
+    $('#signupForm').on('submit', async (e) => {
+      e.preventDefault()
+      const form = e.target
+      const formData = new FormData(form)
+      if (form.password.value != form.confirmPassword.value) {
+        Notiflix.Report.warning(
+          'คำเตือน',
+          `<div class='text-center'>กรุณากรอกรหัสผ่านให้ตรงกัน</div>`,
+          'ตกลง',
+        );
+      } else {
+        const res = await fetch('/api/auth/signUp', {
+          method: 'post',
+          body: formData
+        })
+        const data = await res.json()
+        if (res.ok) {
+          Notiflix.Report.success(
+            'สมัครสมาชิกสำเร็จ',
+            `${data.message}`,
+            'ตกลง',
+            () => {
+              window.location.href = '/'
+            }
+          );
+        } else {
+          Notiflix.Report.failure(
+            'สมัครสมาชิกไม่สำเร็จ',
+            `${data.error}`,
+            'ตกลง',
+          );
+        }
+      }
+    })
+  </script>
 </body>
 
 </html>
