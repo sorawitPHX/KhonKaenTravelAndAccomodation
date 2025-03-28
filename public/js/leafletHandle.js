@@ -124,8 +124,8 @@ $(document).ready(async () => {
     // ✅ เพิ่ม Layer ลงใน control panel
     let overlayMaps = {
         "สถานที่ท่องเที่ยว": tourismLayer,
-        "ที่พัก": accommodationLayer,
-        "จ.ขอนแก่น": khonkaenLayer
+        "สถานที่พัก": accommodationLayer,
+        "ขอบเขตจังหวัดขอนแก่น": khonkaenLayer
     };
 
     let layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
