@@ -2,184 +2,243 @@
 <html lang="th">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>แก้ไขโปรไฟล์</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(to right, #edc6ff 0%, #bae8ff 50%, #f7ffff 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* จัดให้อยู่กลางแนวตั้ง */
-            margin: 0;
-            font-family: 'Arial', sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>แก้ไขโปรไฟล์</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #edc6ff 0%, #bae8ff 50%, #f7ffff 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* จัดให้อยู่กลางแนวตั้ง */
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+    }
 
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 9999;
-            background-color: #ffffff;
-            /* ทำให้ navbar ขาว */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            /* เพิ่มเงาให้ navbar */
-        }
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 9999;
+      background-color: #ffffff;
+      /* ทำให้ navbar ขาว */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      /* เพิ่มเงาให้ navbar */
+    }
 
-        .container {
-            width: 100%;
-            height: 100vh;
-            /* ใช้ความสูงเต็ม */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* จัดให้อยู่กลาง */
-        }
+    .container {
+      width: 100%;
+      height: 100vh;
+      /* ใช้ความสูงเต็ม */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* จัดให้อยู่กลาง */
+    }
 
-        .profile-card {
-            background: rgb(255, 240, 240);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            /* เพิ่มเงาให้กับกล่องโปรไฟล์ */
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+    .profile-card {
+      background: rgb(255, 240, 240);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      /* เพิ่มเงาให้กับกล่องโปรไฟล์ */
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-        .profile-card:hover {
-            transform: translateY(-10px);
-            /* ทำให้กล่องโปรไฟล์ยกขึ้นเมื่อ hover */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
+    .profile-card:hover {
+      transform: translateY(-10px);
+      /* ทำให้กล่องโปรไฟล์ยกขึ้นเมื่อ hover */
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
 
-        .profile-img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #ddd;
-            margin-bottom: 10px;
-            transition: border 0.3s ease;
-        }
+    .profile-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #ddd;
+      margin-bottom: 10px;
+      transition: border 0.3s ease;
+    }
 
-        .profile-img:hover {
-            border-color: #8a4fff;
-            /* เมื่อ hover จะเปลี่ยนสีขอบ */
-        }
+    .profile-img:hover {
+      border-color: #8a4fff;
+      /* เมื่อ hover จะเปลี่ยนสีขอบ */
+    }
 
-        .text-muted {
-            font-size: 14px;
-            margin-top: 10px;
-            color: #8a8a8a;
-        }
+    .text-muted {
+      font-size: 14px;
+      margin-top: 10px;
+      color: #8a8a8a;
+    }
 
-        .form-control {
-            border-radius: 10px;
-            padding: 12px;
-            font-size: 16px;
-            border: px solid #ddd;
-            transition: border-color 0.3s ease;
-        }
+    .form-control {
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 16px;
+      border: px solid #ddd;
+      transition: border-color 0.3s ease;
+    }
 
-        .form-control:focus {
-            border-color: hsl(27, 95%, 78%);
-            box-shadow: 0 0 5px hsl(59, 100%, 81%);
-        }
+    .form-control:focus {
+      border-color: hsl(27, 95%, 78%);
+      box-shadow: 0 0 5px hsl(59, 100%, 81%);
+    }
 
-        .form-label {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 8px;
-        }
+    .form-label {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+    }
 
-        .btn {
-            border-radius: 10px;
-            padding: 12px;
-            font-size: 16px;
-        }
+    .btn {
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 16px;
+    }
 
-        .btn-primary {
-            background-color: #0056b3;
-            border: none;
-        }
+    .btn-primary {
+      background-color: #0056b3;
+      border: none;
+    }
 
-        .btn-primary:hover {
-            background-color: #007bff;
-        }
+    .btn-primary:hover {
+      background-color: #007bff;
+    }
 
-        .btn-danger {
-            background-color: #e74c3c;
-            border: none;
-        }
+    .btn-danger {
+      background-color: #e74c3c;
+      border: none;
+    }
 
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
 
-        .d-flex {
-            gap: 10px;
-        }
-    </style>
+    .d-flex {
+      gap: 10px;
+    }
+  </style>
 </head>
 
 <body>
-    <%- include('components/navbar') %>
-    <div class="container">
-        <div class="profile-card text-center p-4 mx-auto" style="max-width: 400px;">
-            <h2 class="mb-4">แก้ไขโปรไฟล์</h2>
-
-            <!-- รูปโปรไฟล์ -->
-            <div class="position-relative d-inline-block">
-                <img id="profileImage" src="https://via.placeholder.com/120" class="profile-img mb-2">
-                <input type="file" id="imageUpload" class="position-absolute top-0 start-0 w-100 h-100 opacity-0"
-                    accept="image/*">
-            </div>
-            <p class="text-muted">คลิกที่รูปเพื่อเปลี่ยน</p>
-
-            <!-- ฟอร์มแก้ไข -->
-            <form>
-                <div class="mb-3 text-start">
-                    <label class="form-label">ชื่อ</label>
-                    <input type="text" class="form-control" value="Chanida Thongsri">
-                </div>
-
-                <div class="mb-3 text-start">
-                    <label class="form-label">อีเมล (แก้ไขไม่ได้)</label>
-                    <input type="email" class="form-control" value="chanida@example.com" disabled>
-                </div>
-
-                <div class="mb-3 text-start">
-                    <label class="form-label">รหัสผ่านใหม่</label>
-                    <input type="password" class="form-control" placeholder="********">
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary flex-fill">บันทึก</button>
-                    <button type="button" class="btn btn-danger flex-fill">ยกเลิก</button>
-                </div>
-            </form>
+  <%- include('components/navbar') %>
+  <div class="container">
+    <div class="profile-card text-center p-4 mx-auto" style="max-width: 400px;">
+      <h2 class="mb-4">แก้ไขโปรไฟล์</h2>
+      <% if (user) {%>
+      <!-- รูปโปรไฟล์ -->
+      <form id="updateProfile">
+        <div class="position-relative d-inline-block">
+          <img id="profileImage" src="<%= user.profile_image %>" class="profile-img mb-2">
+          <input type="file" id="imageUpload" name="profile" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor: pointer;" accept="image/*">
         </div>
+        <p class="text-muted">คลิกที่รูปเพื่อเปลี่ยน</p>
+
+        <!-- ฟอร์มแก้ไข -->
+        <div class="mb-3 text-start">
+          <label class="form-label">อีเมล (แก้ไขไม่ได้)</label>
+          <input type="email" name="email" class="form-control" value="" disabled>
+        </div>
+
+        <div class="mb-3 text-start">
+          <label class="form-label">ชื่อ</label>
+          <input type="text" name="name" class="form-control" value="">
+        </div>
+
+        <div class="mb-3 text-start">
+          <label class="form-label">รหัสผ่านใหม่</label>
+          <input type="password" name="password" class="form-control" placeholder="********">
+        </div>
+
+        <div class="mb-3 text-start">
+          <label class="form-label">รหัสผ่านใหม่ (ยืนยัน)</label>
+          <input type="password" name="confirmPassword" class="form-control" placeholder="********">
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary flex-fill">บันทึก</button>
+          <button type="button" class="btn btn-danger flex-fill">ยกเลิก</button>
+        </div>
+      </form>
+      <% } %>
     </div>
+  </div>
+  <%- include('components/script-tag') %>
+  <script>
+    document.getElementById('imageUpload').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('profileImage').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
 
-    <script>
-        document.getElementById('imageUpload').addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    document.getElementById('profileImage').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    </script>
+    async function loadProfileData() {
+      Notiflix.Loading.hourglass()
+      const res = await fetch('/api/auth/profile')
+      const data = await res.json()
+      if (res.ok && data) {
+        const form = document.getElementById('updateProfile')
+        form.email.value = data.email
+        form.name.value = data.name
+      } else {
+        Notiflix.Report.failure(
+          'โหลดข้อมูลไม่สำเร็จ',
+          '',
+          'ตกลง'
+        )
+      }
+      Notiflix.Loading.remove()
+    }
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    $(document).ready(async () => {
+      loadProfileData()
+    })
+
+    $('#updateProfile').on('submit', async (e) => {
+      e.preventDefault()
+      const form = e.target
+      const formData = new FormData(form)
+      if(form.password.value != form.confirmPassword.value) {
+        return Notiflix.Report.warning(
+            'คำเตือน',
+            'รหัสผ่านไม่ตรงกัน',
+            'ตกลง'
+        )
+      }
+      const res = await fetch('/api/auth/profile', {
+        method: 'put',
+        body: formData
+      })
+      const data = await res.json()
+      if (res.ok) {
+        Notiflix.Report.success(
+          'อัปเดทโปรไฟล์สำเร็จ',
+          `${data.message}`,
+          'ตกลง',
+          (() => {
+            window.location.reload()
+          })
+        )
+      } else {
+        Notiflix.Report.failure(
+          'อัปเดทโปรไฟบ์ไม่สำเร็จ',
+          `${data.error}`,
+          'ตกลง',
+        )
+      }
+    })
+  </script>
 </body>
 
 </html>

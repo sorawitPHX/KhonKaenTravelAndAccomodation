@@ -85,6 +85,7 @@ $(document).ready(async () => {
             alert('โหลดข้อมูลสถานที่ท่องเที่ยวไม่สำเร็จ')
         }
     }
+    Notiflix.Loading.hourglass()
     let map = L.map('map').setView([16.40218, 102.81079], 12);
     let osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 15,
@@ -101,7 +102,8 @@ $(document).ready(async () => {
         "ภาพถ่ายดาวเทียม": Stadia_AlidadeSatellite
     };
     let layerControl = L.control.layers(baseMaps).addTo(map);
-
     await loadTourism()
     await loadAccommodation()
+
+    Notiflix.Loading.remove()
 })

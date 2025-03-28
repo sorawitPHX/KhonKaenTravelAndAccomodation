@@ -39,10 +39,10 @@ model User {
   name      String
   email     String   @unique
   password  String
+  profile_image String?
   role      UserRole @default(user)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   reviews     Review[]
   reviewLikes ReviewLike[]
 }
