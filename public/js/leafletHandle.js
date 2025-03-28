@@ -144,9 +144,9 @@ $(document).ready(async () => {
         }
     }
     
-    await loadKhonKaenGeoJSON();
     await loadTourism();
     await loadAccommodation();
+    await loadKhonKaenGeoJSON();
 
     Notiflix.Loading.remove();
 });
