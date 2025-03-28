@@ -22,9 +22,9 @@
           <a class="nav-link" href="/signUp">สมัครสมาชิก</a>
         </li>
         <% } else { %>
-          <li class="nav-item d-inline-flex justify-content-center align-items-center">
-            <a class="nav-link" href="/profile">โปรไฟล์</a>
-          </li>
+        <li class="nav-item d-inline-flex justify-content-center align-items-center">
+          <a class="nav-link" href="/profile">โปรไฟล์</a>
+        </li>
         <% } %>
       </ul>
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -32,7 +32,7 @@
         <li class="nav-item dropdown d-inline-flex justify-content-center align-items-center">
           <a class="nav-link dropdown-toggle d-inline-flex justify-content-center align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <span class="">สวัสดีคุณ <%= user.name %></span>
-            <img style="width: 32px; height: 32px;" class="rounded-circle" src="<%= user.profile_image %>" alt="Profile">
+            <img style="width: 32px; height: 32px;" class="rounded-circle object-fit-cover" src="<%= user.profile_image %>" alt="Profile">
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item">สวัสดีคุณ <%= user.name %></a></li>
@@ -53,4 +53,20 @@
       </ul>
     </div>
   </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // ดึง path ของ URL ปัจจุบัน เช่น "/profile"
+      const currentPath = window.location.pathname;
+
+      // เลือก nav-link ทุกตัว
+      document.querySelectorAll(".navbar-nav .nav-link").forEach(link => {
+        // ตรวจสอบว่าลิงก์ href ตรงกับ path ปัจจุบันหรือไม่
+        if (link.getAttribute("href") === currentPath) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      });
+    });
+  </script>
 </nav>
