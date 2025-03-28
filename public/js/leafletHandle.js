@@ -125,10 +125,10 @@ $(document).ready(async () => {
     
             let geoJsonLayer = L.geoJSON(data, {
                 style: {
-                    color: "#ff7800", // สีขอบ
+                    color: "#E91E63", // สีขอบ
                     weight: 2,        // ความหนาของเส้น
                     opacity: 0.8,     // ความโปร่งใสของเส้น
-                    fillColor: "#ffcc00", // สีพื้นที่
+                    fillColor: "#FFC0CB", // สีพื้นที่
                     fillOpacity: 0.5  // ความโปร่งใสของพื้นที่
                 },
                 onEachFeature: function (feature, layer) {
