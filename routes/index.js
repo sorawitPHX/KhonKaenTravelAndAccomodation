@@ -3,19 +3,19 @@ const path = require("path");
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/index.html"));
+  res.render('index')
 });
 
 router.get("/signIn", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/signIn.html"));
+  res.render('signIn')
 });
 
 router.get("/signUp", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/signUp.html"));
+  res.render('signUp')
 });
 
 router.get("/profile", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/profile.html"));
+  res.render('profile')
 });
 
 module.exports = router;

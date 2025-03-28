@@ -1,12 +1,28 @@
 const express = require("express");
 const router = express.Router();
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
 
 // ดึงข้อมูลสถานที่ทั้งหมด
-router.get("/", (req, res) => {
-  res.json([
-    { id: 1, name: "สถานที่ A", type: "สถานที่ท่องเที่ยว" },
-    { id: 2, name: "สถานที่ B", type: "ที่พัก" },
-  ]);
+router.get("/", async (req, res) => {
+  const results = await prisma.$queryRaw`
+  SELECT 
+    "id", 
+    "name", 
+    "address", 
+    "phoneNumber", 
+    "website", 
+    "category", 
+    "price", 
+    "openingHours", 
+    "photos", 
+    "createdAt", 
+    "updatedAt", 
+    ST_X(geom) as longitude, 
+    ST_Y(geom) as latitude
+  FROM "AccommodationSpot"
+`
+res.json(results)
 });
 
 // เพิ่มสถานที่ใหม่

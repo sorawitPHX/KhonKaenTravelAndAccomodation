@@ -1,0 +1,46 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex justify-content-center align-items-center gap-2" href="/">
+      <img style="height: 32px;" src="/images/cpkku_white.png" alt="cpkku logo">
+      <div class="d-inline">|</div>
+      <small>แผนที่ค้นหาสถานที่ท่องเที่ยวและที่พัก</small>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+      
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="nav-item d-inline-flex justify-content-center align-items-center">
+          <a class="nav-link active" aria-current="page" href="/">หน้าเเรก</a>
+        </li>
+        <li class="nav-item d-inline-flex justify-content-center align-items-center">
+          <a class="nav-link" href="/signIn">เข้าสู่ระบบ</a>
+        </li>
+        <li class="nav-item d-inline-flex justify-content-center align-items-center">
+          <a class="nav-link" href="/signUp">สมัครสมาชิก</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item dropdown d-inline-flex justify-content-center align-items-center">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img style="width: 32px; height: 32px;" class="rounded-circle" src="/images/profile2.jpg" alt="Profile">
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/profile">โปรไฟล์</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="/auth/signout">ออกจากระบบ</a></li>
+          </ul>
+        </li>
+        <li class="nav-item d-inline-flex justify-content-center align-items-center">
+          <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="ค้นหาสถานที่..." aria-label="Search">
+            <button class="btn btn-outline-light" type="submit">ค้นหา</button> <!-- ปรับให้เป็นปุ่มสีอ่อนเมื่อใช้ dark theme -->
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

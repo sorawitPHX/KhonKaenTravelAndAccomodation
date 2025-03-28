@@ -13,94 +13,94 @@ enum UserRole {
 }
 
 enum TourismCategory {
-  natural
-  historical
-  cultural
-  shopping
-  entertainment
-  religious
-  other
+  park     @map("สวนสาธารณะ")
+  museum   @map("พิพิธภัณฑ์")
+  temple   @map("วัด")
+  waterpark @map("สวนน้ำ")
+  placesofworship @map("สถานที่สักการะบูชา")
+  cafe     @map("คาเฟ่")
+  zoo      @map("สวนสัตว์")
+  monument @map("อนุสรณ์สถาน")
+  nationalpark @map("อุทยานแห่งชาติ")
+  other @map("อื่นๆ")
 }
 
 enum AccommodationCategory {
-  hotel
-  resort
-  hostel
-  apartment
-  camping
-  other
+  hotel @map("โรงแรม")
+  resort @map("รีสอร์ท")
+  hostel @map("โฮสเทล")
+  apartment @map("อพาร์ทเมนท์")
+  camping @map("แคมป์ปิ้ง")
+  other @map("อื่นๆ")
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  name       String
-  email      String   @unique
-  password   String
-  role       UserRole @default(user)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(user)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  reviews    Review[]
+  reviews     Review[]
   reviewLikes ReviewLike[]
 }
 
 model TourismSpot {
-  id           Int               @id @default(autoincrement()) 
+  id           Int             @id @default(autoincrement())
   name         String
   address      String?
-  phoneNumber  String?           @db.VarChar(10)
-  website      String?
-  category     TourismCategory
-  price        Int?
+  category     TourismCategory @default(other)
   openingHours String?
-  photos       String[]
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  photos       String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
-  reviews      Review[]
+  reviews Review[]
 
   @@map("TourismSpot")
 }
 
 model AccommodationSpot {
-  id           Int                   @id @default(autoincrement()) 
+  id           Int                   @id @default(autoincrement())
   name         String
   address      String?
   phoneNumber  String?               @db.VarChar(10)
   website      String?
-  category     AccommodationCategory
+  category     AccommodationCategory @default(hotel)
   price        Int?
   openingHours String?
-  photos       String[]
+  photos       String?
   createdAt    DateTime              @default(now())
   updatedAt    DateTime              @updatedAt
 
-  reviews      Review[]
+  reviews Review[]
 
   @@map("AccommodationSpot")
 }
 
 model Review {
-  id                   Int                @id @default(autoincrement()) 
-  userId               Int
-  tourismSpotId        Int?
-  accommodationSpotId  Int?
+  id                  Int      @id @default(autoincrement())
+  userId              Int
+  tourismSpotId       Int?
+  accommodationSpotId Int?
   comment             String?
   rating              Int
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
-  user                User               @relation(fields: [userId], references: [id])
-  tourismSpot         TourismSpot?       @relation(fields: [tourismSpotId], references: [id])
-  accommodationSpot   AccommodationSpot? @relation(fields: [accommodationSpotId], references: [id])
-  reviewLikes        ReviewLike[]
+  user              User               @relation(fields: [userId], references: [id])
+  tourismSpot       TourismSpot?       @relation(fields: [tourismSpotId], references: [id])
+  accommodationSpot AccommodationSpot? @relation(fields: [accommodationSpotId], references: [id])
+  reviewLikes       ReviewLike[]
 }
 
 model ReviewLike {
-  id       Int   @id @default(autoincrement()) 
+  id       Int @id @default(autoincrement())
   userId   Int
   reviewId Int
 
-  user     User   @relation(fields: [userId], references: [id])
-  review   Review @relation(fields: [reviewId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  review Review @relation(fields: [reviewId], references: [id])
 }

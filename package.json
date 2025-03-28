@@ -14,16 +14,22 @@
     "nodemon": "^3.1.9"
   },
   "dependencies": {
+    "@fancyapps/ui": "^5.0.36",
     "@prisma/client": "^6.5.0",
     "body-parser": "^1.20.3",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
     "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
     "express": "^4.21.2",
     "jquery": "^3.7.1",
     "leaflet": "^1.9.4",
     "pg": "^8.14.1",
     "prisma": "^6.5.0"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }
