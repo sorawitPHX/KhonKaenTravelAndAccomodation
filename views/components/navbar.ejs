@@ -44,11 +44,24 @@
           </ul>
         </li>
         <% } %>
-        <li class="nav-item d-inline-flex justify-content-center align-items-center">
-          <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="ค้นหาสถานที่..." aria-label="Search">
-            <button class="btn btn-dark" type="submit">ค้นหา</button> <!-- ปรับให้เป็นปุ่มสีอ่อนเมื่อใช้ dark theme -->
+        <li id="searchContainer" class="nav-item d-inline-flex justify-content-center align-items-center position-relative">
+          <form id="searchForm" class="d-flex position-relative" role="search">
+            <input class="form-control me-2" style="width: 300px;" id="searchBox" name="searchBox" type="search" placeholder="ค้นหาสถานที่..." aria-label="Search">
           </form>
+          <ul id="searchResults" class="dropdown-menu w-100 shadow"></ul>
+          <style>
+            #searchResults {
+              position: absolute;
+              top: 100%;
+              left: 0;
+              max-height: 300px;
+              overflow-y: auto;
+              display: none;
+            }
+            #searchResults.show {
+              display: block;
+            }
+          </style>
         </li>
       </ul>
     </div>
@@ -57,7 +70,10 @@
     document.addEventListener("DOMContentLoaded", function() {
       // ดึง path ของ URL ปัจจุบัน เช่น "/profile"
       const currentPath = window.location.pathname;
-
+      console.log(currentPath)
+      if(currentPath != '/') {
+        document.querySelector('#searchContainer').classList.add('d-none')
+      }
       // เลือก nav-link ทุกตัว
       document.querySelectorAll(".navbar-nav .nav-link").forEach(link => {
         // ตรวจสอบว่าลิงก์ href ตรงกับ path ปัจจุบันหรือไม่

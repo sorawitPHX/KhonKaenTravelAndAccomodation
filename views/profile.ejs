@@ -129,7 +129,7 @@
 
 <body>
   <%- include('components/navbar') %>
-  <div class="container">
+  <div class="container mt-5">
     <div class="profile-card text-center p-4 mx-auto" style="max-width: 400px;">
       <h2 class="mb-4">แก้ไขโปรไฟล์</h2>
       <% if (user) {%>
@@ -170,6 +170,7 @@
       <% } %>
     </div>
   </div>
+  <%- include('components/footer') %>
   <%- include('components/script-tag') %>
   <script>
     document.getElementById('imageUpload').addEventListener('change', function(event) {

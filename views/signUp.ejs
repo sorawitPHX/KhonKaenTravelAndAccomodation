@@ -66,37 +66,38 @@
 
 <body>
   <%- include('components/navbar') %>
-<!-- กล่องสมัครสมาชิก -->
-<div class="container d-flex justify-content-center align-items-center vh-100">
-  <div class="card p-4 shadow-lg rounded-4" style="max-width: 400px; width: 100%;">
-    <h2 class="text-center mb-3 text-primary fw-bold">สมัครสมาชิก</h2>
-    <form id="signupForm" enctype="multipart/form-data">
-      <div class="mb-3">
-        <label for="email" class="form-label fw-semibold">อีเมล</label>
-        <input type="email" class="form-control" name="email" id="email" placeholder="กรอกอีเมลของคุณ" required>
-      </div>
-      <div class="mb-3">
-        <label for="name" class="form-label fw-semibold">ชื่อ-นามสกุล</label>
-        <input type="text" class="form-control" id="name" name="name" placeholder="กรอกชื่อ-นามสกุล" required>
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label fw-semibold">รหัสผ่าน</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="กรอกรหัสผ่าน" required>
-      </div>
-      <div class="mb-3">
-        <label for="confirmPassword" class="form-label fw-semibold">ยืนยันรหัสผ่าน</label>
-        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="ยืนยันรหัสผ่าน" required>
-      </div>
-      <div class="mb-3">
-        <label for="profile" class="form-label fw-semibold">รูปภาพโปรไฟล์</label>
-        <input type="file" class="form-control" id="profile" name="profile" accept="image/png,image/jpeg">
-      </div>
-      <button type="submit" class="btn btn-primary w-100 fw-bold">สมัครสมาชิก</button>
-    </form>
-    <p class="text-center mt-3">มีบัญชีแล้ว? <a href="/signIn" class="text-decoration-none fw-semibold">เข้าสู่ระบบ</a></p>
+  <!-- กล่องสมัครสมาชิก -->
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 shadow-lg rounded-4" style="max-width: 400px; width: 100%;">
+      <h2 class="text-center mb-3 text-primary fw-bold">สมัครสมาชิก</h2>
+      <form id="signupForm" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="email" class="form-label fw-semibold">อีเมล</label>
+          <input type="email" class="form-control" name="email" id="email" placeholder="กรอกอีเมลของคุณ" required>
+        </div>
+        <div class="mb-3">
+          <label for="name" class="form-label fw-semibold">ชื่อ-นามสกุล</label>
+          <input type="text" class="form-control" id="name" name="name" placeholder="กรอกชื่อ-นามสกุล" required>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label fw-semibold">รหัสผ่าน</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="กรอกรหัสผ่าน" required>
+        </div>
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label fw-semibold">ยืนยันรหัสผ่าน</label>
+          <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="ยืนยันรหัสผ่าน" required>
+        </div>
+        <div class="mb-3">
+          <label for="profile" class="form-label fw-semibold">รูปภาพโปรไฟล์</label>
+          <input type="file" class="form-control" id="profile" name="profile" accept="image/png,image/jpeg">
+        </div>
+        <button type="submit" class="btn btn-primary w-100 fw-bold">สมัครสมาชิก</button>
+      </form>
+      <p class="text-center mt-3">มีบัญชีแล้ว? <a href="/signIn" class="text-decoration-none fw-semibold">เข้าสู่ระบบ</a></p>
+    </div>
   </div>
-</div>
 
+  <%- include('components/footer') %>
   <!-- Bootstrap JS -->
   <%- include('components/script-tag') %>
   <script>

@@ -105,13 +105,14 @@ async function openReviewModal(type, placeId) {
     let userRes = await fetch("/api/auth/current-user");
     let userData = await userRes.json();
     let currentUserId = userData?.id;
+    let currentUserRole = userData?.role;
 
     let reviewHtml = reviews.map(review => {
         let userLiked = review.reviewLikes.some(like => like.userId === currentUserId);
         let btnClass = userLiked ? "btn-primary" : "btn-light"; // เปลี่ยนสีปุ่มเมื่อไลก์แล้ว
 
         // เพิ่มปุ่มลบรีวิวเมื่อรีวิวเป็นของผู้ใช้ที่ล็อกอิน
-        let deleteButton = review.userId === currentUserId ? `
+        let deleteButton = (review.userId === currentUserId || currentUserRole == 'admin') ? `
             <button class="btn btn-danger btn-sm" onclick="deleteReview(${review.id})">
                 ลบรีวิว
             </button>
@@ -136,18 +137,48 @@ async function openReviewModal(type, placeId) {
 }
 
 async function deleteReview(reviewId) {
-    if (confirm("คุณต้องการลบรีวิวนี้ใช่หรือไม่?")) {
-        let res = await fetch(`/api/reviews/${reviewId}`, { method: "DELETE" });
+    Notiflix.Confirm.show(
+        'ลบข้อมูล',
+        'คุณต้องการลบรีวิวนี้ใช่หรือไม่',
+        'ใช่',
+        'ไม่',
+        async () => {
+            let res = await fetch(`/api/reviews/${reviewId}`, { method: "DELETE" });
+            if (res.ok) {
+                Notiflix.Report.success(
+                    'ลบรีวิวเรียบร้อยแล้ว',
+                    '',
+                    'ตกลง',
+                    () => {
+                        let modal = bootstrap.Modal.getInstance(document.getElementById("reviewModal"));
+                        if (modal) modal.hide(); // ปิด modal เดิมก่อน
+                        setTimeout(() => openReviewModal(document.getElementById("reviewType").value, document.getElementById("reviewPlaceId").value), 300); // รอ modal ปิดก่อนแล้วเปิดใหม่
+                    }
+                )
 
-        if (res.ok) {
-            alert("ลบรีวิวเรียบร้อยแล้ว");
-            let modal = bootstrap.Modal.getInstance(document.getElementById("reviewModal"));
-            if (modal) modal.hide(); // ปิด modal เดิมก่อน
-            setTimeout(() => openReviewModal(document.getElementById("reviewType").value, document.getElementById("reviewPlaceId").value), 300); // รอ modal ปิดก่อนแล้วเปิดใหม่
-        } else {
-            alert("เกิดข้อผิดพลาดในการลบรีวิว");
-        }
-    }
+            } else {
+                if (res.status == 403) {
+                    Notiflix.Report.info(
+                        'โปรดทราบ',
+                        'กรุณาเข้าสู่ระบบก่อนดำเนินการ',
+                        'ตกลง',
+                        () => {
+                            window.location.href = '/signIn'
+                        }
+                    )
+                } else {
+                    Notiflix.Report.failure(
+                        'เกิดข้อผิดพลาด',
+                        `${data.error}`,
+                        'ตกลง',
+                    )
+                }
+            }
+        },
+        () => {
+
+        },
+    );
 }
 
 
@@ -164,12 +195,34 @@ async function submitReview() {
     });
 
     if (res.ok) {
-        alert("รีวิวของคุณถูกบันทึกแล้ว");
-        let modal = bootstrap.Modal.getInstance(document.getElementById("reviewModal"));
-        if (modal) modal.hide(); // ปิด modal เดิมก่อน
-        setTimeout(() => openReviewModal(type, placeId), 300); // รอ modal ปิดก่อนแล้วเปิดใหม่
+        Notiflix.Report.success(
+            'รีวิวของคุณถูกบันทึกแล้ว',
+            '',
+            'ตกลง',
+            () => {
+                let modal = bootstrap.Modal.getInstance(document.getElementById("reviewModal"));
+                if (modal) modal.hide(); // ปิด modal เดิมก่อน
+                setTimeout(() => openReviewModal(type, placeId), 300); // รอ modal ปิดก่อนแล้วเปิดใหม่
+            }
+        )
+
     } else {
-        alert("เกิดข้อผิดพลาดในการบันทึกรีวิว");
+        if (res.status == 403) {
+            Notiflix.Report.info(
+                'โปรดทราบ',
+                'กรุณาเข้าสู่ระบบก่อนดำเนินการ',
+                'ตกลง',
+                () => {
+                    window.location.href = '/signIn'
+                }
+            )
+        } else {
+            Notiflix.Report.failure(
+                'เกิดข้อผิดพลาด',
+                `${data.error}`,
+                'ตกลง',
+            )
+        }
     }
 }
 
@@ -185,7 +238,22 @@ async function likeReview(reviewId) {
         if (modal) modal.hide();
         setTimeout(() => openReviewModal(document.getElementById("reviewType").value, document.getElementById("reviewPlaceId").value), 300);
     } else {
-        alert("เกิดข้อผิดพลาด");
+        if (res.status == 403) {
+            Notiflix.Report.info(
+                'โปรดทราบ',
+                'กรุณาเข้าสู่ระบบก่อนดำเนินการ',
+                'ตกลง',
+                () => {
+                    window.location.href = '/signIn'
+                }
+            )
+        } else {
+            Notiflix.Report.failure(
+                'เกิดข้อผิดพลาด',
+                `${data.error}`,
+                'ตกลง',
+            )
+        }
     }
 }
 
@@ -201,7 +269,9 @@ $(document).ready(async () => {
     Notiflix.Loading.hourglass();
     const user = await getCurrentUser()
     // console.log(user)
-    let map = L.map('map').setView([16.468218482217885, 102.6308571861837], 9);
+    let map = L.map('map', {
+        zoomControl: false  // ปิดปุ่ม Zoom ดั้งเดิม
+    }).setView([16.468218482217885, 102.6308571861837], 9);
 
     let osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 20,
@@ -224,6 +294,7 @@ $(document).ready(async () => {
     let tourismLayer = L.layerGroup().addTo(map);  // เปิดอยู่ตั้งแต่แรก
     let accommodationLayer = L.layerGroup().addTo(map);  // เปิดอยู่ตั้งแต่แรก
     let khonkaenLayer = L.layerGroup().addTo(map)
+    let allMarkers = []; // เก็บ Marker ทั้งหมด
 
     // ✅ เพิ่ม Layer ลงใน control panel
     let overlayMaps = {
@@ -232,7 +303,8 @@ $(document).ready(async () => {
         "ขอบเขตจังหวัดขอนแก่น": khonkaenLayer
     };
 
-    let layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+    L.control.zoom({ position: 'bottomleft' }).addTo(map);
+    let layerControl = L.control.layers(baseMaps, overlayMaps, { position: 'bottomright' }).addTo(map);
 
     // ✅ เปิด Modal เมื่อคลิกที่แผนที่
     if (user?.role == 'admin') {
@@ -324,7 +396,7 @@ $(document).ready(async () => {
                                     </div>
                                     <hr class='my-2'>
                                     ` : ''
-                    L.marker([place.latitude, place.longitude], { icon: icon })
+                    let marker = L.marker([place.latitude, place.longitude], { icon: icon })
                         .bindPopup(`
                             <div class="container-fluid">
                                 <div class="row">
@@ -348,6 +420,7 @@ $(document).ready(async () => {
                                 </div>
                             </div>
                         `).addTo(tourismLayer); // ✅ เพิ่มเข้า Layer Group
+                    allMarkers.push({ marker, name: place.name, type: 'สถานที่ท่องเที่ยว', icon: '✈️' });
                 });
             } else {
                 alert('ไม่พบข้อมูลท่องเที่ยว');
@@ -379,7 +452,7 @@ $(document).ready(async () => {
                                     </div>
                                     <hr class='my-2'>
                                     ` : ''
-                    L.marker([place.latitude, place.longitude], { icon: icon })
+                    let marker = L.marker([place.latitude, place.longitude], { icon: icon })
                         .bindPopup(`
                             <div class="container-fluid">
                                 <div class="row">
@@ -405,6 +478,7 @@ $(document).ready(async () => {
                                 </div>
                             </div>
                         `).addTo(accommodationLayer); // ✅ เพิ่มเข้า Layer Group
+                    allMarkers.push({ marker, name: place.name, type: 'ที่พัก', icon: '🛌🏻' });
                 });
             } else {
                 alert('ไม่พบข้อมูลที่พัก');
@@ -439,6 +513,34 @@ $(document).ready(async () => {
             console.error("โหลด GeoJSON ไม่สำเร็จ", error);
         }
     }
+    const searchResults = document.getElementById('searchResults')
+    function searchMarker(query) {
+        let matchedMarkers = allMarkers.filter(item => item.name.toLowerCase().includes(query.toLowerCase()));
+        searchResults.innerHTML = ``
+        if (matchedMarkers.length > 0 && query) {
+            searchResults.classList.add("show");
+            matchedMarkers.forEach((place, index) => {
+                const li = document.createElement("li");
+                li.classList.add("dropdown-item");
+                li.innerHTML = `<strong>${place.icon}${place.name}</strong> - ${place.type}`;
+                li.addEventListener("click", function () {
+                    if (matchedMarkers[index]) {
+                        map.setView(matchedMarkers[index].marker.getLatLng(), 12);
+                        matchedMarkers[index].marker.openPopup();
+                    }
+                });
+                searchResults.appendChild(li);
+            });
+        } else {
+            searchResults.innerHTML = ``
+            searchResults.classList.remove("show");
+        }
+    }
+
+    $('#searchBox').on('input', (e) => {
+        const query = e.target.value
+        searchMarker(query)
+    })
 
     await loadTourism();
     await loadAccommodation();

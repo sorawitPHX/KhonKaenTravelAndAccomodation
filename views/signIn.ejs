@@ -76,26 +76,25 @@
 
 <body>
   <%- include('components/navbar') %>
-<!-- กล่องเข้าสู่ระบบ -->
-<div class="container d-flex justify-content-center align-items-center vh-100">
-  <div class="card shadow-lg p-4 rounded-4" style="max-width: 400px; width: 100%;">
-    <h2 class="text-center mb-3 text-primary fw-bold">เข้าสู่ระบบ</h2>
-    <form id="signInForm">
-      <div class="mb-3">
-        <label for="email" class="form-label fw-medium">อีเมล</label>
-        <input type="email" class="form-control" name="email" id="email" placeholder="กรอกอีเมลของคุณ" required>
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label fw-medium">รหัสผ่าน</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="กรอกรหัสผ่าน" required>
-      </div>
-      <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">เข้าสู่ระบบ</button>
-    </form>
-    <p class="text-center mt-3">ยังไม่มีบัญชี? <a href="/signUp" class="text-decoration-none">สมัครสมาชิก</a></p>
+  <!-- กล่องเข้าสู่ระบบ -->
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-4 rounded-4" style="max-width: 400px; width: 100%;">
+      <h2 class="text-center mb-3 text-primary fw-bold">เข้าสู่ระบบ</h2>
+      <form id="signInForm">
+        <div class="mb-3">
+          <label for="email" class="form-label fw-medium">อีเมล</label>
+          <input type="email" class="form-control" name="email" id="email" placeholder="กรอกอีเมลของคุณ" required>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label fw-medium">รหัสผ่าน</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="กรอกรหัสผ่าน" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">เข้าสู่ระบบ</button>
+      </form>
+      <p class="text-center mt-3">ยังไม่มีบัญชี? <a href="/signUp" class="text-decoration-none">สมัครสมาชิก</a></p>
+    </div>
   </div>
-</div>
-
-
+  <%- include('components/footer') %>
   <!-- Bootstrap JS -->
   <%- include('components/script-tag') %>
   <script>
