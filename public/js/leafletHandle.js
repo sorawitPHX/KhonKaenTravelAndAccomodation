@@ -172,13 +172,15 @@ async function openReviewModal(type, placeId) {
     let userData = await userRes.json();
     let currentUserId = userData?.id;
     let currentUserRole = userData?.role;
+    let currentImageProfile = userData?.profile_image
 
     let reviewHtml = `<p><strong>คะแนนรีวิวรวมเฉลี่ย:</strong> <span class='d-inline-flex gap-1 align-items-center'>${reviewsAverage ? reviewsAverage + '<span class="d-inline-flex">' + renderStars(reviewsAverage) + '</span>' + '(' + countReviews + ')' : 'ไม่มีรีวิว'}</span></p>` 
     let reviewsList = reviews.map(review => {
         let userLiked = review.reviewLikes.some(like => like.userId === currentUserId);
         let btnClass = userLiked ? "btn-primary" : "btn-light"; // เปลี่ยนสีปุ่มเมื่อไลก์แล้ว
-
+        // console.log(review)
         // เพิ่มปุ่มลบรีวิวเมื่อรีวิวเป็นของผู้ใช้ที่ล็อกอิน
+        let userProfile  = review.user.profile_image
         let deleteButton = (review.userId === currentUserId || currentUserRole == 'admin') ? `
             <button class="btn btn-danger btn-sm" onclick="deleteReview(${review.id})">
                 ลบรีวิว
@@ -190,7 +192,7 @@ async function openReviewModal(type, placeId) {
         </svg>`
         return `
             <div class="card p-2 mb-2">
-                <strong class="d-flex gap-2 justify-contents-center align-items-center">${personIcon} ${review.user.name}</strong> คะแนนรีวิว ${parseFloat(review.rating).toFixed(1)} <span>${renderStars(parseInt(review.rating))}</span>
+                <strong class="d-flex gap-2 justify-contents-center align-items-center"><img class='rounded-pill' style='width: 32px; height: 32px;' src='${userProfile}'> ${review.user.name}</strong> คะแนนรีวิว ${parseFloat(review.rating).toFixed(1)} <span>${renderStars(parseInt(review.rating))}</span>
                 <p>${review.comment}</p>
                 <div class='text-end'>
                     <button class="btn ${btnClass} btn-sm" onclick="likeReview(${review.id}, this)">

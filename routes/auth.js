@@ -191,7 +191,7 @@ router.put("/profile", requireAuth, upload.single("profile"), async (req, res) =
 
         console.log(updatedUser)
         req.session.userName = updatedUser.name;
-        req.session.userProfile = updatedUser.profile_image || 'images/profile3.png'
+        req.session.userProfile = updatedUser.profile_image || '/images/profile3.png'
         
         res.json({ user: updatedUser, message: "อัปเดตโปรไฟล์สำเร็จ!" });
 
@@ -203,7 +203,7 @@ router.put("/profile", requireAuth, upload.single("profile"), async (req, res) =
 
 router.get("/current-user", (req, res) => {
     if (req.session.userId) {
-        res.json({ id: req.session.userId, role: req.session.userRole });
+        res.json({ id: req.session.userId, role: req.session.userRole, profile_image: req.session.userProfile });
     } else {
         res.json({ id: null });
     }
