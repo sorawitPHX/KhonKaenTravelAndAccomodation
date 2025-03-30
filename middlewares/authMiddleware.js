@@ -14,10 +14,17 @@ const requireAuth = (req, res, next) => {
 
 const requireAuthApi = (req, res, next) => {
     if (!req.session.userId) {
-        return res.status(403).json({error: 'กรุณาเข้าสู่ระบบก่อน'});
+        return res.status(401).json({error: 'กรุณาเข้าสู่ระบบก่อน'});
     }
     next()
 };
+
+const requireAdminRoleApi = (req, res, next)=>{
+    if(req.session.userRole == 'admin') {
+        return next()
+    }
+    return res.status(403).json({error: 'ไม่มีสิทธ์เข้าถึง'})
+}
 
 const setUserSession = (req, res, next) => {
     res.locals.user = req.session.userId ? { 
@@ -29,4 +36,4 @@ const setUserSession = (req, res, next) => {
     next();
 };
 
-module.exports = { redirectIfAuthenticated, requireAuth, setUserSession, requireAuthApi };
+module.exports = { redirectIfAuthenticated, requireAuth, setUserSession, requireAuthApi, requireAdminRoleApi };

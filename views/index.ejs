@@ -21,14 +21,14 @@
           <form id="placeForm">
             <input type="hidden" id="placeId">
             <div class="mb-3">
-              <label for="placeType" class="form-label">ประเภท</label>
+              <label for="placeType" class="form-label">ประเภท <sapn class="text-danger">*</sapn></label>
               <select class="form-select" id="placeType" name="type" required>
                 <option value="tourism">สถานที่ท่องเที่ยว</option>
                 <option value="accommodation">ที่พัก</option>
               </select>
             </div>
             <div class="mb-3">
-              <label for="placeName" class="form-label">ชื่อสถานที่</label>
+              <label for="placeName" class="form-label">ชื่อสถานที่ <sapn class="text-danger">*</sapn></label>
               <input type="text" class="form-control" id="placeName" name="name" required>
             </div>
             <div class="mb-3">
@@ -42,16 +42,17 @@
               <label for="placeOpeningHours" class="form-label">เวลาเปิดทำการ</label>
               <input type="text" class="form-control" id="placeOpeningHours" name="openingHours">
             </div>
-            <div class="mb-3">
+            <div class="mb-3 d-flex flex-column gap-1">
               <label for="placePhotos" class="form-label">รูปภาพ (URL)</label>
               <input type="text" class="form-control" id="placePhotos" name="photos">
+              <img id="placePhotosPreview" class="img-thumbnail" src="" alt="รูปภาพตัวอย่าง">
             </div>
             <div class="mb-3">
-              <label for="placeLat" class="form-label">ละติจูด</label>
+              <label for="placeLat" class="form-label">ละติจูด <sapn class="text-danger">*</sapn></label>
               <input type="text" class="form-control" id="placeLat" name="lat" readonly>
             </div>
             <div class="mb-3">
-              <label for="placeLng" class="form-label">ลองจิจูด</label>
+              <label for="placeLng" class="form-label">ลองจิจูด <sapn class="text-danger">*</sapn></label>
               <input type="text" class="form-control" id="placeLng" name="long" readonly>
             </div>
             <button type="submit" class="btn btn-primary">บันทึก</button>
@@ -69,8 +70,6 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <div id="reviewsList"></div>
-          <hr>
           <h5>เพิ่มรีวิวของคุณ</h5>
           <input type="hidden" id="reviewPlaceId">
           <input type="hidden" id="reviewType">
@@ -83,6 +82,8 @@
           </select>
           <textarea id="reviewComment" class="form-control mt-2" placeholder="เขียนรีวิว..."></textarea>
           <button class="btn btn-success mt-2" onclick="submitReview()">ส่งรีวิว</button>
+          <hr>
+          <div id="reviewsList"></div>
         </div>
       </div>
     </div>

@@ -5,9 +5,10 @@ const prisma = new PrismaClient()
 
 // ดึงข้อมูลสถานที่ทั้งหมด
 router.get("/", async (req, res) => {
-  const id = req.query.id
-  if (id) {
-    const results = await prisma.$queryRaw`
+  try {
+    const id = req.query.id
+    if (id) {
+      const results = await prisma.$queryRaw`
     SELECT 
       "id", 
       "name", 
@@ -17,7 +18,7 @@ router.get("/", async (req, res) => {
       "category", 
       "price", 
       "openingHours", 
-      "photos", 
+      COALESCE(NULLIF("photos", ''), '/images/Image_not_available.png') AS "photos", 
       "createdAt", 
       "updatedAt", 
       ST_X(geom) as longitude, 
@@ -25,9 +26,9 @@ router.get("/", async (req, res) => {
     FROM "AccommodationSpot"
     WHERE id = ${id}::integer
   `
-    res.json(results)
-  } else {
-    const results = await prisma.$queryRaw`
+      res.json(results)
+    } else {
+      const results = await prisma.$queryRaw`
     SELECT 
       "id", 
       "name", 
@@ -37,14 +38,17 @@ router.get("/", async (req, res) => {
       "category", 
       "price", 
       "openingHours", 
-      "photos", 
+      COALESCE(NULLIF("photos", ''), '/images/Image_not_available.png') AS "photos", 
       "createdAt", 
       "updatedAt", 
       ST_X(geom) as longitude, 
       ST_Y(geom) as latitude
     FROM "AccommodationSpot"
   `
-    res.json(results)
+      res.json(results)
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

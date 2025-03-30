@@ -39,7 +39,7 @@ async function main() {
       email: 'admin@admin.com',  // อีเมลของ admin
       password: await bcrypt.hash('passw0rd', 10),  // รหัสผ่าน (อย่าลืมเข้ารหัสหากใช้งานจริง)
       role: 'admin',  // ระบุว่าเป็น admin
-      name: 'แอดมิน โหดมาก'  // ชื่อของ admin
+      name: 'นายเผือก สีสุภาพ'  // ชื่อของ admin
     }
   });
 

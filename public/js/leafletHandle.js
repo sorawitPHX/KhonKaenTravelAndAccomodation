@@ -1,3 +1,13 @@
+function renderStars(rating, maxStars = 5) {
+    return `
+    <svg style="color: #fffb00;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+    </svg>`.repeat(rating) +
+        `<svg style="color:rgb(190, 190, 190);" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+    </svg>`.repeat(maxStars - rating);
+}
+
 // ✅ เปิด Modal แก้ไขข้อมูล
 async function editPlace(type, id) {
     let res = await fetch(`/api/${type}?id=${id}`);
@@ -9,6 +19,12 @@ async function editPlace(type, id) {
     $('#placeAddress').val(place.address);
     $('#placeOpeningHours').val(place.openingHours);
     $('#placePhotos').val(place.photos);
+    if($('#placePhotos').val(place.photos)) {
+        $('#placePhotosPreview').show()
+        $('#placePhotosPreview').attr('src', place.photos)
+    }else {
+        $('#placePhotosPreview').hide()
+    }
     $('#placeType').val(type);
     $('#placeLat').val(place.latitude);
     $('#placeLng').val(place.longitude);
@@ -33,7 +49,7 @@ function updateExtraFields(type) {
     if (type === 'tourism') {
         extraFields.append(`
         <div class="mb-3">
-            <label for="placeCategory" class="form-label">หมวดหมู่</label>
+            <label for="placeCategory" class="form-label">หมวดหมู่ <sapn class="text-danger">*</sapn></label>
             <select class="form-select" id="placeCategory" name="category">
                 <option value="สวนสาธารณะ">สวนสาธารณะ</option>
                 <option value="พิพิธภัณฑ์">พิพิธภัณฑ์</option>
@@ -78,20 +94,39 @@ function updateExtraFields(type) {
 }
 
 async function deletePlace(type, id) {
-    if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบสถานที่นี้?')) {
-        return;
-    }
+    Notiflix.Confirm.show(
+        'ลบข้อมูล',
+        'คุณแน่ใจหรือไม่ว่าต้องการลบสถานที่นี้?',
+        'ใช่',
+        'ไม่',
+        async () => {
+            let res = await fetch(`/api/${type}/${id}`, {
+                method: 'DELETE'
+            });
 
-    let res = await fetch(`/api/${type}/${id}`, {
-        method: 'DELETE'
-    });
+            if (res.ok) {
+                Notiflix.Report.success(
+                    'ดำเนินการสำเร็จ',
+                    'ลบสถานที่สำเร็จ',
+                    'ตกลง',
+                    () => {
+                        location.reload()
+                    }
+                )
+            } else {
+                Notiflix.Report.failure(
+                    'เกิดข้อผิดพลาด',
+                    `${data?.error}`,
+                    'ตกลง',
+                )
+            }
+        },
+        () => {
+            return
+        }
+    )
 
-    if (res.ok) {
-        alert('ลบสถานที่สำเร็จ');
-        location.reload();
-    } else {
-        alert('เกิดข้อผิดพลาดในการลบสถานที่');
-    }
+
 }
 
 async function openReviewModal(type, placeId) {
@@ -117,10 +152,13 @@ async function openReviewModal(type, placeId) {
                 ลบรีวิว
             </button>
         ` : '';
-
+        const personIcon = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+        </svg>`
         return `
             <div class="card p-2 mb-2">
-                <strong>${review.user.name}</strong> คะแนนรีวิว ⭐${review.rating}
+                <strong class="d-flex gap-2 justify-contents-center align-items-center">${personIcon} ${review.user.name}</strong> คะแนนรีวิว ${parseFloat(review.rating).toFixed(1)} <span>${renderStars(parseInt(review.rating))}</span>
                 <p>${review.comment}</p>
                 <div class='text-end'>
                     <button class="btn ${btnClass} btn-sm" onclick="likeReview(${review.id}, this)">
@@ -157,7 +195,7 @@ async function deleteReview(reviewId) {
                 )
 
             } else {
-                if (res.status == 403) {
+                if (res.status == 401) {
                     Notiflix.Report.info(
                         'โปรดทราบ',
                         'กรุณาเข้าสู่ระบบก่อนดำเนินการ',
@@ -169,14 +207,14 @@ async function deleteReview(reviewId) {
                 } else {
                     Notiflix.Report.failure(
                         'เกิดข้อผิดพลาด',
-                        `${data.error}`,
+                        `${data?.error}`,
                         'ตกลง',
                     )
                 }
             }
         },
         () => {
-
+            return
         },
     );
 }
@@ -207,7 +245,7 @@ async function submitReview() {
         )
 
     } else {
-        if (res.status == 403) {
+        if (res.status == 401) {
             Notiflix.Report.info(
                 'โปรดทราบ',
                 'กรุณาเข้าสู่ระบบก่อนดำเนินการ',
@@ -219,7 +257,7 @@ async function submitReview() {
         } else {
             Notiflix.Report.failure(
                 'เกิดข้อผิดพลาด',
-                `${data.error}`,
+                `${data?.error}`,
                 'ตกลง',
             )
         }
@@ -238,7 +276,7 @@ async function likeReview(reviewId) {
         if (modal) modal.hide();
         setTimeout(() => openReviewModal(document.getElementById("reviewType").value, document.getElementById("reviewPlaceId").value), 300);
     } else {
-        if (res.status == 403) {
+        if (res.status == 401) {
             Notiflix.Report.info(
                 'โปรดทราบ',
                 'กรุณาเข้าสู่ระบบก่อนดำเนินการ',
@@ -250,7 +288,7 @@ async function likeReview(reviewId) {
         } else {
             Notiflix.Report.failure(
                 'เกิดข้อผิดพลาด',
-                `${data.error}`,
+                `${data?.error}`,
                 'ตกลง',
             )
         }
@@ -316,6 +354,11 @@ $(document).ready(async () => {
             $('#placeAddress').val('');
             $('#placeOpeningHours').val('');
             $('#placePhotos').val('');
+            if($('#placePhotos').val()) {
+                $('#placePhotosPreview').show()
+            }else {
+                $('#placePhotosPreview').hide()
+            }
             $('#placeType').val('tourism');
             $('#placeLat').val(lat);
             $('#placeLng').val(lng);
@@ -341,7 +384,6 @@ $(document).ready(async () => {
         let type = $('#placeType').val();
         let url = id ? `/api/${type}/${id}` : `/api/${type}`;
         let method = id ? 'PUT' : 'POST';
-
         let placeData = {
             name: $('#placeName').val(),
             address: $('#placeAddress').val(),
@@ -366,10 +408,22 @@ $(document).ready(async () => {
 
         if (res.ok) {
             $('#placeModal').modal('hide');
-            alert(id ? 'อัปเดตข้อมูลสำเร็จ' : 'เพิ่มสถานที่สำเร็จ');
-            location.reload();
+            Notiflix.Report.success(
+                'ดำเนินการสำเร็จ',
+                id ? 'อัปเดตข้อมูลสำเร็จ' : 'เพิ่มสถานที่สำเร็จ',
+                'ตกลง',
+                () => {
+                    location.reload()
+                }
+            )
         } else {
-            alert('เกิดข้อผิดพลาด');
+            Notiflix.Report.failure(
+                'เกิดข้อผิดพลาด',
+                `${data?.error}`,
+                'ตกลง',
+                () => {
+                }
+            )
         }
     });
 
@@ -401,7 +455,6 @@ $(document).ready(async () => {
                             <div class="container-fluid">
                                 <div class="row">
                                     ${modifyContainer}
-                                    
                                     <div class="col-12">
                                         <h5 class="popup-header fw-bold">${place.name}</h5>
                                         <p><strong>หมวดหมู่:</strong> ${place.category}</p>
@@ -423,10 +476,18 @@ $(document).ready(async () => {
                     allMarkers.push({ marker, name: place.name, type: 'สถานที่ท่องเที่ยว', icon: '✈️' });
                 });
             } else {
-                alert('ไม่พบข้อมูลท่องเที่ยว');
+                Notiflix.Report.info(
+                    'โปรดทราบ',
+                    'ไม่พบข้อมูลท่องเที่ยว',
+                    'ตกลง'
+                )
             }
         } else {
-            alert('โหลดข้อมูลสถานที่ท่องเที่ยวไม่สำเร็จ');
+            Notiflix.Report.failure(
+                'เกิดข้อผิดพลาด',
+                `โหลดข้อมูลสถานที่ท่องเที่ยวไม่สำเร็จ`,
+                'ตกลง',
+            )
         }
     }
 
@@ -481,10 +542,18 @@ $(document).ready(async () => {
                     allMarkers.push({ marker, name: place.name, type: 'ที่พัก', icon: '🛌🏻' });
                 });
             } else {
-                alert('ไม่พบข้อมูลที่พัก');
+                Notiflix.Report.info(
+                    'โปรดทราบ',
+                    'ไม่พบข้อมูลที่พัก',
+                    'ตกลง'
+                )
             }
         } else {
-            alert('โหลดข้อมูลที่พักไม่สำเร็จ');
+            Notiflix.Report.failure(
+                'เกิดข้อผิดพลาด',
+                `โหลดข้อมูลที่พักไม่สำเร็จ`,
+                'ตกลง',
+            )
         }
     }
 
