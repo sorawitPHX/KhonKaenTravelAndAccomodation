@@ -344,7 +344,7 @@ $(document).ready(async () => {
     // console.log(user)
     let map = L.map('map', {
         zoomControl: false  // ปิดปุ่ม Zoom ดั้งเดิม
-    }).setView([16.468218482217885, 102.6308571861837], 10);
+    }).setView([16.468218482217885, 102.6308571861837], 11);
 
     let osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 20,
