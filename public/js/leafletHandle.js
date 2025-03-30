@@ -638,7 +638,10 @@ $(document).ready(async () => {
     }
     const searchResults = document.getElementById('searchResults')
     function searchMarker(query) {
-        let matchedMarkers = allMarkers.filter(item => item.name.toLowerCase().includes(query.toLowerCase()));
+        let matchedMarkers = allMarkers.filter(item => 
+            (item.name?.toLowerCase().includes(query.toLowerCase())) || 
+            (item.type?.toLowerCase().includes(query.toLowerCase()))
+        );
         searchResults.innerHTML = ``
         if (matchedMarkers.length > 0 && query) {
             searchResults.classList.add("show");
