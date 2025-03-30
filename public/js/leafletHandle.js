@@ -518,7 +518,7 @@ $(document).ready(async () => {
                                 </div>
                             </div>
                         `).addTo(tourismLayer); // ✅ เพิ่มเข้า Layer Group
-                    allMarkers.push({ marker, name: place.name, type: 'สถานที่ท่องเที่ยว', icon: '✈️' });
+                    allMarkers.push({ marker, name: place.name, type: 'สถานที่ท่องเที่ยว', icon: '✈️', reviewScore: reviewsAverage });
                 });
             } else {
                 Notiflix.Report.info(
@@ -593,7 +593,7 @@ $(document).ready(async () => {
                                 </div>
                             </div>
                         `).addTo(accommodationLayer); // ✅ เพิ่มเข้า Layer Group
-                    allMarkers.push({ marker, name: place.name, type: 'ที่พัก', icon: '🛌🏻' });
+                    allMarkers.push({ marker, name: place.name, type: 'ที่พัก', icon: '🛌🏻', reviewScore: reviewsAverage });
                 });
             } else {
                 Notiflix.Report.info(
@@ -645,7 +645,7 @@ $(document).ready(async () => {
             matchedMarkers.forEach((place, index) => {
                 const li = document.createElement("li");
                 li.classList.add("dropdown-item");
-                li.innerHTML = `<strong>${place.icon}${place.name}</strong> - ${place.type}`;
+                li.innerHTML = `<strong>${place.icon}${place.name}</strong> - ${place.reviewScore ? '⭐' + place.reviewScore : 'ไม่มีรีวิว'} - ${place.type}`;
                 li.addEventListener("click", function () {
                     if (matchedMarkers[index]) {
                         map.setView(matchedMarkers[index].marker.getLatLng(), 12);
