@@ -8,6 +8,12 @@ function renderStars(rating, maxStars = 5) {
     </svg>`.repeat(maxStars - rating);
 }
 
+async function loadGeoData() {
+    await loadTourism();
+    await loadAccommodation();
+    await loadKhonKaenGeoJSON();
+}
+
 // ✅ เปิด Modal แก้ไขข้อมูล
 async function editPlace(type, id) {
     let res = await fetch(`/api/${type}?id=${id}`);
@@ -19,10 +25,10 @@ async function editPlace(type, id) {
     $('#placeAddress').val(place.address);
     $('#placeOpeningHours').val(place.openingHours);
     $('#placePhotos').val(place.photos);
-    if($('#placePhotos').val(place.photos)) {
+    if ($('#placePhotos').val(place.photos)) {
         $('#placePhotosPreview').show()
         $('#placePhotosPreview').attr('src', place.photos)
-    }else {
+    } else {
         $('#placePhotosPreview').hide()
     }
     $('#placeType').val(type);
@@ -109,8 +115,9 @@ async function deletePlace(type, id) {
                     'ดำเนินการสำเร็จ',
                     'ลบสถานที่สำเร็จ',
                     'ตกลง',
-                    () => {
+                    async () => {
                         location.reload()
+                        // await loadGeoData()
                     }
                 )
             } else {
@@ -127,6 +134,21 @@ async function deletePlace(type, id) {
     )
 
 
+}
+
+async function fetchReviews(type, placeId) {
+    const res = await fetch(`/api/reviews/${type}/${placeId}`)
+    const data = await res.json()
+    if (res.ok) {
+        return data
+    } else {
+        console.log(data)
+        Notiflix.Report.failure(
+            'เกิดข้อผิดพลาด',
+            'ไม่สามารถดึงข้อมูลรีวิวได้',
+            'ตกลง'
+        )
+    }
 }
 
 async function openReviewModal(type, placeId) {
@@ -237,10 +259,12 @@ async function submitReview() {
             'รีวิวของคุณถูกบันทึกแล้ว',
             '',
             'ตกลง',
-            () => {
+            async () => {
+                // await loadGeoData()
                 let modal = bootstrap.Modal.getInstance(document.getElementById("reviewModal"));
                 if (modal) modal.hide(); // ปิด modal เดิมก่อน
                 setTimeout(() => openReviewModal(type, placeId), 300); // รอ modal ปิดก่อนแล้วเปิดใหม่
+
             }
         )
 
@@ -354,9 +378,9 @@ $(document).ready(async () => {
             $('#placeAddress').val('');
             $('#placeOpeningHours').val('');
             $('#placePhotos').val('');
-            if($('#placePhotos').val()) {
+            if ($('#placePhotos').val()) {
                 $('#placePhotosPreview').show()
-            }else {
+            } else {
                 $('#placePhotosPreview').hide()
             }
             $('#placeType').val('tourism');
@@ -412,7 +436,8 @@ $(document).ready(async () => {
                 'ดำเนินการสำเร็จ',
                 id ? 'อัปเดตข้อมูลสำเร็จ' : 'เพิ่มสถานที่สำเร็จ',
                 'ตกลง',
-                () => {
+                async () => {
+                    // await loadGeoData()
                     location.reload()
                 }
             )
@@ -434,7 +459,7 @@ $(document).ready(async () => {
         if (res.ok) {
             console.log('tourism', data);
             if (data.length !== 0) {
-                data.forEach((place) => {
+                data.forEach(async (place) => {
                     var icon = L.icon({
                         iconUrl: `/images/ประเภทสถานที่ท่องเที่ยว/${place.category}.png`,
                         iconSize: [32, 32],
@@ -450,6 +475,14 @@ $(document).ready(async () => {
                                     </div>
                                     <hr class='my-2'>
                                     ` : ''
+                    let reviews = await fetchReviews('tourism', place.id)
+                    let countReviews = reviews.length
+                    let sumScore = 0
+                    let reviewsAverage = 0
+                    reviews.forEach((review) => {
+                        sumScore += parseInt(review.rating)
+                    })
+                    reviewsAverage = countReviews ? parseFloat(sumScore / countReviews).toFixed(1) : 0
                     let marker = L.marker([place.latitude, place.longitude], { icon: icon })
                         .bindPopup(`
                             <div class="container-fluid">
@@ -460,7 +493,8 @@ $(document).ready(async () => {
                                         <p><strong>หมวดหมู่:</strong> ${place.category}</p>
                                         <p><strong>เปิดให้บริการ:</strong> ${place.openingHours}</p>
                                         <p><strong>ที่อยู่:</strong> ${place.address ? place.address : 'ไม่ระบุ'}</p>
-                                    </div>
+                                        <p><strong>คะแนนรีวิว:</strong> <span class='d-inline-flex gap-1 align-items-center'>${reviewsAverage ? reviewsAverage + '<span class="d-inline-flex">' + renderStars(reviewsAverage) + '</span>' + '(' + countReviews + ')' : 'ไม่มีรีวิว'}</span></p>
+                                        </div>
                                     <div class="col-12">
                                         <a href="${place.photos}" data-fancybox="gallery" data-caption="${'รูปภาพ ' + place.name}">
                                             <img src="${place.photos}" class="img-thumbnail" alt="Click to view larger image">
@@ -497,7 +531,7 @@ $(document).ready(async () => {
         if (res.ok) {
             console.log('accomodation', data);
             if (data.length !== 0) {
-                data.forEach((place) => {
+                data.forEach(async (place) => {
                     var icon = L.icon({
                         iconUrl: '/images/ที่พัก/type/0star.png',
                         iconSize: [32, 32],
@@ -513,6 +547,14 @@ $(document).ready(async () => {
                                     </div>
                                     <hr class='my-2'>
                                     ` : ''
+                    let reviews = await fetchReviews('accommodation', place.id)
+                    let countReviews = reviews.length
+                    let sumScore = 0
+                    let reviewsAverage = 0
+                    reviews.forEach((review) => {
+                        sumScore += parseInt(review.rating)
+                    })
+                    reviewsAverage = countReviews ? parseFloat(sumScore / countReviews).toFixed(1) : 0
                     let marker = L.marker([place.latitude, place.longitude], { icon: icon })
                         .bindPopup(`
                             <div class="container-fluid">
@@ -521,11 +563,12 @@ $(document).ready(async () => {
                                     <div class="col-12">
                                         <h5 class="popup-header fw-bold">${place.name}</h5>
                                         <p><strong>หมวดหมู่:</strong> ${place.category}</p>
-                                        <p><strong>ราคา:</strong> ${place.price} บาท</p>
+                                        <p><strong>ราคา:</strong> ${place.price ? place.price + ' บาท' : 'ไม่ระบุ'} </p>
                                         <p><strong>เปิดให้บริการ:</strong> ${place.openingHours}</p>
                                         <p><strong>เบอร์ติดต่อ:</strong> ${place.phoneNumber}</p>
                                         <p><strong>เว็บไซต์:</strong> ${place.website ? place.website : 'ไม่พบ'}</p>
                                         <p><strong>ที่อยู่:</strong> ${place.address ? place.address : 'ไม่ระบุ'}</p>
+                                        <p><strong>คะแนนรีวิว:</strong> <span class='d-inline-flex gap-1 align-items-center'>${reviewsAverage ? reviewsAverage + '<span class="d-inline-flex">' + renderStars(reviewsAverage) + '</span>' + '(' + countReviews + ')' : 'ไม่มีรีวิว'}</span></p>
                                     </div>
                                     <div class="col-12">
                                         <a href="${place.photos}" data-fancybox="gallery" data-caption="${'รูปภาพ ' + place.name}">
