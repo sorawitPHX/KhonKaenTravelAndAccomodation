@@ -1,4 +1,5 @@
 function renderStars(rating, maxStars = 5) {
+    rating = Math.floor(rating)
     return `
     <svg style="color: #fffb00;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
         <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
@@ -158,13 +159,22 @@ async function openReviewModal(type, placeId) {
     let res = await fetch(`/api/reviews/${type}/${placeId}`);
     let reviews = await res.json();
 
+    let countReviews = reviews.length
+    let sumScore = 0
+    let reviewsAverage = 0
+    reviews.forEach((review) => {
+        sumScore += parseInt(review.rating)
+    })
+    reviewsAverage = countReviews ? parseFloat(sumScore / countReviews).toFixed(1) : 0    
+
     // ดึง userId ของผู้ใช้ที่ล็อกอินอยู่
     let userRes = await fetch("/api/auth/current-user");
     let userData = await userRes.json();
     let currentUserId = userData?.id;
     let currentUserRole = userData?.role;
 
-    let reviewHtml = reviews.map(review => {
+    let reviewHtml = `<p><strong>คะแนนรีวิวรวมเฉลี่ย:</strong> <span class='d-inline-flex gap-1 align-items-center'>${reviewsAverage ? reviewsAverage + '<span class="d-inline-flex">' + renderStars(reviewsAverage) + '</span>' + '(' + countReviews + ')' : 'ไม่มีรีวิว'}</span></p>` 
+    let reviewsList = reviews.map(review => {
         let userLiked = review.reviewLikes.some(like => like.userId === currentUserId);
         let btnClass = userLiked ? "btn-primary" : "btn-light"; // เปลี่ยนสีปุ่มเมื่อไลก์แล้ว
 
@@ -191,6 +201,7 @@ async function openReviewModal(type, placeId) {
             </div>
         `;
     }).join('');
+    reviewHtml = reviewHtml + reviewsList
 
     document.getElementById("reviewsList").innerHTML = reviewHtml || "<p>ยังไม่มีรีวิว</p>";
     new bootstrap.Modal(document.getElementById("reviewModal")).show();
