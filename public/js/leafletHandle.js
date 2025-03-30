@@ -192,7 +192,7 @@ async function openReviewModal(type, placeId) {
         </svg>`
         return `
             <div class="card p-2 mb-2">
-                <strong class="d-flex gap-2 justify-contents-center align-items-center"><img class='rounded-pill' style='width: 32px; height: 32px;' src='${userProfile}'> ${review.user.name}</strong> คะแนนรีวิว ${parseFloat(review.rating).toFixed(1)} <span>${renderStars(parseInt(review.rating))}</span>
+                <strong class="d-flex gap-2 justify-contents-center align-items-center"><img class='rounded-pill object-fit-cover' style='width: 32px; height: 32px;' src='${userProfile}'> ${review.user.name}</strong> คะแนนรีวิว ${parseFloat(review.rating).toFixed(1)} <span>${renderStars(parseInt(review.rating))}</span>
                 <p>${review.comment}</p>
                 <div class='text-end'>
                     <button class="btn ${btnClass} btn-sm" onclick="likeReview(${review.id}, this)">
